@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from "macros.html" import render_field %}
+
+<div class="pure-u-1">
+	<form class="pure-form pure-form-stacked" method="post">
+	{{ form.csrf_token }}
+	 	<fieldset>
+            <h4>{{ form.name.label }}</h4> 
+            {{ render_field(form.name, class="pure-input-1-3") }}
+            <h4>{{ form.email.label }}</h4> 
+            {{ render_field(form.email, class="pure-input-1-3") }}
+            <h4>{{ form.qq.label }}</h4> 
+            {{ render_field(form.qq, class="pure-input-1-3") }}
+            <h4>{{ form.mobile.label }}</h4> 
+            {{ render_field(form.mobile, class="pure-input-1-3") }}
+            <h4>{{ form.password.label }}</h4> 
+            {{ render_field(form.password, class="pure-input-1-3") }}
+            <p>	
+            <button type="submit" class="pure-button pure-button-primary">提交</button>
+            <a class="pure-button" href="{{ url_for('user_list') }}">返回</a>
+        </fieldset>
+	</form>
+</div>
+
+{% endblock %}

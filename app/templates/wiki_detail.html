@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from "macros.html" import render_field %}
+
+<div class="pure-u-1">
+      <table class="pure-table pure-table-horizontal pure-table-bordered">
+      <thead>
+            <tr><th colspan=2 align="center"><h2>{{ wiki.title }}</h2></th></tr>
+      </thead>
+      <tbody>
+            <tr><th align="right">创建人: {{ wiki.created_user }}</th></tr>
+            <tr><th align="right">更新人: {{ wiki.updated_user }}</th></tr>
+            <tr><th align="right">类别
+            {% if wiki.category_id == 1 %} 采集&直播流
+            {% elif wiki.category_id == 2 %} 监控系统
+            {% elif wiki.category_id == 3 %} 北美SunTV
+            {% elif wiki.category_id == 4 %} iSearch
+            {% elif wiki.category_id == 5 %} 其他
+            {% endif %}
+            </th></tr>
+            <tr><th align="left">{{ wiki.content|safe }}</th></tr>
+      <tbody>
+      </table>
+      <p>
+      <a class="pure-button" href="{{ url_for('wiki_list') }}">返回</a>
+</div>
+
+{% endblock %}

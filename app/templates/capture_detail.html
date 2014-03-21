@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from "macros.html" import render_field %}
+
+<div class="pure-u-2-3">
+      <table class="pure-table pure-table-horizontal pure-table-bordered">
+            <tr align="left"><th bgcolor="#CCFFCC" width="10%">ID</th><th width="90%">{{ capture.id }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">IDC位置</th>
+                  {% if capture.location_id == 1 %}<th>无锡新区</th>
+                  {% elif capture.location_id == 2 %}<th>无锡国脉</th>
+                  {% elif capture.location_id == 3 %}<th>北京</th>
+                  {% elif capture.location_id == 4 %}<th>北京备份</th>
+                  {% elif capture.location_id == 5 %}<th>上海</th>
+                  {% elif capture.location_id == 6 %}<th>上海备份</th>
+                  {% elif capture.location_id == 7 %}<th>广州</th>
+                  {% elif capture.location_id == 8 %}<th>长沙</th>
+                  {% elif capture.location_id == 9 %}<th>安徽</th>
+                  {% elif capture.location_id == 10 %}<th>山西</th>
+                  {% endif %}
+            <tr align="left"><th bgcolor="#CCFFCC">主机名</th><th>{{ capture.hostname }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">外网</th><th>{{ capture.nic1 }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">内网</th><th>{{ capture.nic2 }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">内网(组播)</th><th>{{ capture.nic3 }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">用途</th><th>{{ capture.cetogory }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">登录密码</th><th>{{ capture.password }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">采集频道</th><th>{{ capture.channel }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">备注</th><th>{{ capture.content|safe }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">创建人</th><th>{{ capture.created_user }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">创建时间</th><th>{{ capture.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">更新人</th><th>{{ capture.updated_user }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">更新时间</th><th>{{ capture.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</th></tr>
+            <tr align="left"><th bgcolor="#CCFFCC">更新次数</th><th>{{ capture.updated_count }}</th></tr>
+      </table>
+      <p>
+      <a class="pure-button" href="{{ url_for('capture_list') }}">返回</a>
+</div>
+
+{% endblock %}

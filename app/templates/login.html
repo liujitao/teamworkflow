@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="pure-u-1">
+    <form class="pure-form" method="post">
+    {{ form.csrf_token }}
+        <fieldset>
+            <h4>用户邮件地址</h4>
+            <h4>{{ form.email }}</h4>
+            <h4>登录密码</h4>
+            <h4>{{ form.password }}</h4>
+            <button id="submit" name="submit" type="submit" class="pure-button pure-button-primary">登录</button>
+        </fieldset>
+    </form>
+</div>
+
+{% endblock %}

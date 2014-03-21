@@ -1,0 +1,36 @@
+{% macro render_field(field) %}
+    {{ field(**kwargs)|safe }}
+    {% if field.errors %}
+        <ul class=errors>
+        {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_pagination(pagination, endpoint) %}
+<ul class="pure-paginator">
+	<li><a class="pure-button pure-button-primary">总 {{ pagination.total }} 条 / {{ pagination.pages }} 页</a></li>
+
+	{% if pagination.has_prev %}
+	<li><a class="pure-button pure-button-primary prev" href="{{ url_for(endpoint, page=pagination.prev_num) }}">上一页</a></li>
+	{% else %}
+	<li><a class="pure-button pure-button-primary">上一页</a></li>
+	{% endif %}
+
+ 	{% for page in pagination.iter_pages() %}
+    {% if page %}
+      {% if page != pagination.page %}
+        <li><a class="pure-button pure-button-primary" href="{{ url_for(endpoint, page=page) }}">{{ page }}</a></li>
+      {% else %}
+        <li><a class="pure-button pure-button-primary">{{ page }}</a></li>
+      {% endif %}
+    {% endif %}
+  	{% endfor %}
+
+  	{% if pagination.has_next %}
+	<li><a class="pure-button pure-button-primary next" href="{{ url_for(endpoint, page=pagination.next_num) }}">下一页</a></li>
+	{% else %}
+	<li><a class="pure-button pure-button-primary next">下一页</a></li>
+	{% endif %}
+</ul>
+{% endmacro %}

@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from 'macros.html' import render_pagination %}
+
+<div class="pure-u-1">
+	<table class="pure-table pure-table-horizontal">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>标题</th>
+				<th>创建人</th>
+				<th>创建时间</th>
+				<th>更新人</th>
+				<th>更新时间</th>
+				<th>更新次数</th>
+				{% if current_user.is_authenticated() %}
+				<th>编辑 <a href="{{ url_for('worklog_add') }}"><i class="fa fa-plus-square-o"></i></a></th>
+				{% else %}
+				<th>编辑</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+		{% for worklog in worklogs %}
+			<tr>
+				<th>{{ worklog.id }}</th>
+				<th><a href="{{ url_for('worklog_detail', id=worklog.id) }}">{{ worklog.title }}</a></th>
+				<th>{{ worklog.created_user }}</th>
+				<th>{{ worklog.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
+				<th>{{ worklog.updated_user }}</th>
+				<th>{{ worklog.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
+				<th>{{ worklog.updated_count }}</th>
+				{% if current_user.is_authenticated() and worklog.updated_user == current_user.name %} 
+				<th><a href="{{ url_for('worklog_edit', id=worklog.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
+				{% else %}
+				<th></th>
+				{% endif %}
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+{% if pagination.total > record_per_page %}
+<div class="pure-u-1" style="padding-top:5px">
+	{{ render_pagination(pagination, 'worklog_list') }}
+</div>
+{% endif %}
+
+{% endblock %}

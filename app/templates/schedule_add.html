@@ -1,0 +1,128 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from "macros.html" import render_field %}
+
+<div class="pure-u-1">
+<form class="pure-form">
+<table class="pure-table pure-table-horizontal">
+      <tr>
+            <th align="right" colspan=4>排班
+            年份 <select id="select_year">
+                  <option>2014</option>
+                  <option>2015</option>
+                  <option>2016</option>
+                  <option>2017</option>
+                  <option>2018</option>
+            </select>
+            月份 <select id="select_month">
+                  <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>             
+            </select>
+            </th>
+      </tr>
+      <tr align="left"><th colspan=4 id="p_staff_desc">轮班人员 (最少4名)</th></tr>
+      {% for user in users %}
+      <tr>
+            <th><input type="checkbox" id="checkbox_p_staff_{{ user.id }}" value="{{ user.name }}"></th>
+            <th>{{ user.name }}</th>
+            <th><select id="select_date_{{ user.id }}"><option>本月值班开始时间</option></select></th>
+            <th>早班</th>
+      </tr>
+      {% endfor %}
+      <tr align="left"><th colspan=4 id="t_staff_desc">替班人员 (最少1名)</th></tr>
+      {% for user in users %}
+      <tr><th><input type="checkbox" id="checkbox_t_staff_{{ user.id }}" value="{{ user.name }}"></th><th>{{ user.name }}</th><th colspan=2></th></tr>
+      {% endfor %}
+</table>
+<p>
+<a class="pure-button pure-button-primary" id="button_submit">提交</a>
+<a class="pure-button" href="{{ url_for('schedule_list') }}">返回</a>
+</form>
+</div>
+
+<script type="text/javascript">
+$(function(){
+
+$('input[id^=checkbox_p_staff]').change(function(){
+      var year = $('#select_year').val();
+      var month = $('#select_month').val();
+      var id = $(this).attr('id').split('_')[3];
+
+      if ($('#select_date_' + id).children().length == 1) {
+            $.ajax({
+                  type: 'GET',
+                  url: $SCRIPT_ROOT + '{{ url_for('get_first_4days') }}',
+                  contentType: 'application/json; charset=utf-8',
+                  dataType: 'json',
+                  data: { 'year': year, 'month': month },
+                  success: function(data) {
+                        /* console.log(data.json[0].id, data.json[0].name, data.json[1].id, data.json[1].name) */
+                        var str = '<option>本月值班开始时间</option>';
+                        for (var i = 0; i < data.json.length; i++) {
+                              var c = data.json[i];
+                              str += '<option>' + c.name + '</option>';
+                        }
+                        $('#select_date_' + id).html(str);
+                  }
+            });
+            $('#checkbox_p_staff_' + id).attr('checked', 'checked');
+            $('#checkbox_t_staff_' + id).attr('disabled', 'disabled');
+      } else {
+            $('#select_date_' + id).empty().append('<option>本月值班开始时间</option>');
+            $('#checkbox_p_staff_' + id).removeAttr('checked');
+            $('#checkbox_t_staff_' + id).removeAttr('disabled');
+      } 
+});
+
+$('input[id^=checkbox_t_staff]').change(function(){
+      var id = $(this).attr('id').split('_')[3];
+      if ($(this).attr('checked')) {
+            $('#checkbox_t_staff_' + id).RemoveAttr('checked');
+      } else {
+            $('#checkbox_t_staff_' + id).attr('checked', 'checked'); 
+      }
+});
+
+$('#button_submit').click(function(){
+      if ($('input[checked][id^=checkbox_p]').length < 4) {
+            $('#p_staff_desc').attr('style', 'color:red')
+      } else if ($('input[checked][id^=checkbox_t]').length <1) {
+            $('#t_staff_desc').attr('style', 'color:red')
+      } else {
+            var year = $('#select_year').val(); 
+            var month = $('#select_month').val();
+            var staff = [];
+
+            $('input[checked]').each(function(idx){
+                  if ($(this).attr('id').substr(0, 10) == 'checkbox_p') {
+                        var id = $(this).attr('id').split('_')[3];
+                        staff[idx] = idx + 1 + ',' + $(this).val() + ',' + $('#select_date_' + id).val() + ',' + 1;
+                  } else {
+                        staff[idx] = idx + 1 + ',' + $(this).val() + ',,' + 2;
+                  }
+            });
+
+            var post_data = {
+                  'year': year, 
+                  'month': month, 
+                  'staff': staff, 
+            };
+
+            $.ajax({
+                  type: 'POST',
+                  dataType: 'json',
+                  contentType: 'application/json;charset=utf-8',
+                  url: $SCRIPT_ROOT + "{{ url_for('schedule_init_commit') }}",
+                  data: JSON.stringify(post_data),
+                  success: function(data) {
+                        if (data.json) {
+                              window.location.href = "{{ url_for('schedule_list') }}"
+                        };    
+                  },
+            }); 
+      }
+});
+
+});
+</script>
+
+{% endblock %}

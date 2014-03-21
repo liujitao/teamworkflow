@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from 'macros.html' import render_field %}
+
+<div class="pure-u-1">
+	<form class="pure-form pure-form-stacked" method="post">
+	{{ form.csrf_token }}
+	 	<fieldset>
+            <h3>{{ form.title.label }}</h3> 
+            {{ render_field(form.title, class="pure-input-1-3", placeholder="格式: 2010-01-01 运维监控 早班") }}
+            <h3>{{ form.content_a.label }}</h3>
+            {{ render_field(form.content_a, id="kindeditor_a") }}
+            <h3>{{ form.content_b.label }}</h3>
+            {{ render_field(form.content_b, id="kindeditor_b") }}
+            <h3>{{ form.content_c.label }}</h3>
+            {{ render_field(form.content_c, id="kindeditor_c") }}
+            <h3>{{ form.content_d.label }}</h3>
+            {{ render_field(form.content_d, id="kindeditor_d") }}
+            <h3>{{ form.content_e.label }}</h3>
+            {{ render_field(form.content_e, id="kindeditor_e") }}
+            <p>	
+            <button type="submit" class="pure-button pure-button-primary">提交</button>
+            <a class="pure-button" href="{{ url_for('worklog_list') }}">返回</a>
+        </fieldset>
+	</form>
+</div>
+
+{% endblock %}

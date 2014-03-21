@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team Work Flow</title>
+
+    <script charset="utf-8" src="{{ url_for('static', filename='jquery-1.11.0.min.js') }}"></script>
+    <script src="http://yui.yahooapis.com/3.14.1/build/yui/yui-min.js"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='kindeditor/plugins/code/prettify.css') }}"/>
+    <script charset="utf-8" src="{{ url_for('static', filename='kindeditor/kindeditor-min.js') }}"></script>
+    <script charset="utf-8" src="{{ url_for('static', filename='kindeditor/lang/zh_CN.js') }}"></script>
+    <script charset="utf-8" src="{{ url_for('static', filename='kindeditor/plugins/code/prettify.js
+') }}"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='pure-min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}"/>
+
+    <script type=text/javascript>
+        var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script> 
+</head>
+
+<body>
+    <!-- navbar -->
+    <div id="navbar-horizontal">
+    <ul id="navbar">
+        <li><a><i class="fa fa-home"></i> </a></li>
+        <li><a href="{{ url_for('worklog_list') }}">监控日报</a></li>       
+        <li><a href="{{ url_for('schedule_list') }}">监控排班</a>
+             {% if current_user.email == 'admin@tvmining.com' %}
+            <ul>
+                <li><a href="{{ url_for('schedule_add') }}">排班</a></li>
+            </ul>
+            {% endif %}
+        </li>
+        {% if current_user.is_authenticated() %}
+        <li><a href="{{ url_for('user_list') }}">团队成员</a>
+        <li><a href="{{ url_for('capture_list') }}">采集&直播流</a>
+            {% if current_user.email == 'admin@tvmining.com' or current_user.email == 'fanzhantao@tvmining.com' %}
+            <ul>
+                <li><a href="{{ url_for('capture_add') }}">添加设备</a></li>
+            </ul>
+            {% endif %}
+        </li>
+        <li><a href="{{ url_for('wiki_list') }}">知识库</a></li>
+ 
+        <li><a><i class="fa fa-user"></i> {{ current_user.name }}</a>
+            <ul>
+                <li><a href="{{ url_for('user_edit', id=current_user.id) }}">修改</a></li>
+                <li><a href="{{ url_for('logout') }}">退出</a></li>
+            </ul>
+        </li>
+        {% else %}
+        <li><a href="{{ url_for('login') }}">登录</a>
+        {% endif %}
+    </ul>
+    </div>
+
+<script>
+YUI({
+    classNamePrefix: 'pure'
+}).use('gallery-sm-menu', function (Y) {
+
+    var horizontalMenu = new Y.Menu({
+        container         : '#navbar-horizontal',
+        sourceNode        : '#navbar',
+        orientation       : 'horizontal',
+        hideOnOutsideClick: false,
+        hideOnClick       : false
+    });
+
+    horizontalMenu.render();
+    horizontalMenu.show();
+
+});
+</script>
+
+<script> 
+    KindEditor.ready(function(K) {
+        window.editor = K.create('textarea[id^=kindeditor]', {
+            width : '800px',
+            height : '200px',
+            items : [
+                'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+                'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+                'insertunorderedlist', '|', 'emoticons', 'image', 'link', '|', 'table', 'code', 'fullscreen'],
+            uploadJson : '{{ url_for("file_upload") }}',
+            fillDescAfterUploadImage : 'false',
+            formatUploadUrl : 'false',
+            urlType : 'absolute', 
+            designMode : 'false', 
+            cssPath : ["{{ url_for('static', filename='kindeditor/plugins/code/prettify.css') }}"]
+        });
+    });
+
+    prettyPrint();
+</script>
+
+    <!-- content -->
+    <div id="content" class="pure-g-r">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- footer -->
+
+</body>
+</html>

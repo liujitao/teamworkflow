@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from "macros.html" import render_field %}
+
+<div class="pure-u-1">
+{% for schedule in lists %}
+      <table class="pure-table pure-table-horizontal" style="width:120%">
+      <thead>
+            <tr align="center">
+                  <th colspan= {{ 1 + schedule.count + 6 }}>
+                        <h2>{{ schedule.year }}年 {{ schedule.month }}月 运维监控值班表</h2>
+                  </th>
+            </tr>
+            <tr align="center" bgcolor="#FFFFFF">
+                  <th>{% if current_user.is_authenticated() and current_user.email == 'admin@tvmining.com' %}<a href="{{ url_for('schedule_edit', year=schedule.year, month=schedule.month)}}">编辑</a>{% endif %}</th>
+                  <th colspan={{ schedule.count - 25 }} style="border:1px solid #CCCCCC;">{{ schedule.month - 1 }}月</th>
+                  <th colspan=25 style="border:1px solid #CCCCCC;">{{ schedule.month }}月</th>
+                  <th colspan=3 style="border:1px solid #CCCCCC;">正常班次</th>
+                  <th colspan=3 style="border:1px solid #CCCCCC;">实际班次</th>
+            </tr>
+      </thead>
+      <tbody>
+            <tr>
+            <th></th>
+            {% for i in schedule.last_month %}
+                  {% if i == 1 %}<th style="color:red;">{{ loop.index + 25 }}</th>
+                  {% else %}<th>{{ loop.index + 25 }}</th>
+                  {% endif %}
+            {% endfor %}
+            {% for i in schedule.this_month %}
+                  {% if i == 1 %}<th style="color:red;">{{ loop.index }}</th>
+                  {% else %}<th>{{ loop.index }}</th>
+                  {% endif %}
+            {% endfor %}
+            <th>总</th><th>早</th><th>晚</th><th>总</th><th>早</th><th>晚</th>
+            </tr>
+            {% for staff in schedule.staffs %}
+            <tr>
+            {% if staff.type == 2 %}<th align="left">{{ staff.name }}(替)</th>
+            {% else %}<th align="left">{{ staff.name }}</th>
+            {% endif %}
+            
+            {% for day in staff.list.split(',') %}
+                  {% if day == '1' %}<th bgcolor="#CCFF99">早</th>
+                  {% elif day == '2' %}<th bgcolor="#CCFFFF">晚</th>
+                  {% elif day == '3' %}<th bgcolor="#FFFF99">换</th>
+                  {% elif day == '4' %}<th bgcolor="#FF9966">休</th>
+                  {% elif day == '5' %}<th bgcolor="#FF6666">全</th>
+                  {% else %}<th></th>
+                  {% endif %}
+            {% endfor %}
+            
+            <th>{{ staff.morning + staff.evening }}</th>
+            <th>{{ staff.morning }}</th>
+            <th>{{ staff.evening }}</th>
+            <th>{{ staff.morning_r + staff.evening_r }}</th>
+            <th>{{ staff.morning_r }}</th>
+            <th>{{ staff.evening_r }}</th>
+            </tr>
+            {% endfor %}
+      </tbody>
+      </table>
+      <p>
+{% endfor %}
+</div>
+
+{% endblock %}

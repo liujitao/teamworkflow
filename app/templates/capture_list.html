@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from 'macros.html' import render_pagination %}
+
+<div class="pure-u-1">
+	<table class="pure-table pure-table-horizontal">
+		<thead>
+			<tr align="center">
+				<th>ID</th>
+				<th>IDC位置</th>
+				<th>主机名</th>
+				<th>外网</th>
+				<th>内网</th>
+				<th>内网(组播)</th>
+				<th>用途</th>
+				<th>登录密码</th>
+				<th>采集频道</th>
+				{% if current_user.is_authenticated() and (current_user.email == 'fanzhantao@tvmining.com' or current_user.email == 'admin@tvmining.com') %}
+				<th>编辑 <a href="{{ url_for('capture_add') }}"><i class="fa fa-plus-square-o"></i></a></th>
+				{% else %}
+				<th>编辑</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+		{% for capture in captures %}
+			<tr>
+				<th>{{ capture.id }}</th>
+				{% if capture.location_id == 1 %}<th>无锡新区</th>
+				{% elif capture.location_id == 2 %}<th>无锡国脉</th>
+				{% elif capture.location_id == 3 %}<th>北京</th>
+				{% elif capture.location_id == 4 %}<th>北京备份</th>
+				{% elif capture.location_id == 5 %}<th>上海</th>
+				{% elif capture.location_id == 6 %}<th>上海备份</th>
+				{% elif capture.location_id == 7 %}<th>广州</th>
+				{% elif capture.location_id == 8 %}<th>长沙</th>
+				{% elif capture.location_id == 9 %}<th>安徽</th>
+				{% elif capture.location_id == 10 %}<th>山西</th>
+				{% else %}<th></th>
+				{% endif %}
+				<th><a href="{{ url_for('capture_detail', id=capture.id) }}">{{ capture.hostname }}</a></th>
+				<th>{{ capture.nic1 }}</th>
+				<th>{{ capture.nic2 }}</th>
+				<th>{{ capture.nic3 }}</th>
+				<th>{{ capture.category }}</th>
+				<th>{{ capture.password }}</th>
+				<th>{{ capture.channel }}</th>
+				{% if current_user.is_authenticated() and capture.updated_user == current_user.name %} 
+				<th><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
+				{% else %}
+				<th></th>
+				{% endif %}
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+{% if pagination.total > record_per_page %}
+<div class="pure-u-1" style="padding-top:5px">
+	{{ render_pagination(pagination, 'capture_list') }}
+</div>
+{% endif %}
+
+{% endblock %}

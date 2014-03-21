@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from "macros.html" import render_field %}
+
+<div class="pure-u-1">
+      <table class="pure-table pure-table-horizontal pure-table-bordered">
+      <thead>
+            <tr><th colspan=3 align="center"><h2>{{ worklog.title }}</h2></th></tr>
+      </thead>
+      <tbody>
+            <tr><th colspan=3 align="right">报告人 {{ worklog.updated_user }}</th></tr>
+            <tr><th width="5%">1</th><th width="10%">服务器运行状态</th><th align="left" width="85%">{{ worklog.content_a|safe }}</th></tr>
+            <tr><th>2</th><th>直播流&采集</th><th align="left">{{ worklog.content_b|safe }}</th></tr>
+            <tr><th>3</th><th>北美SunTV</th><th align="left">{{ worklog.content_c|safe }}</th></tr>
+            <tr><th>4</th><th>监控服务器变更</th><th align="left">{{ worklog.content_d|safe }}</th></tr>
+            <tr><th>5</th><th>iSearch</th><th align="left">{{ worklog.content_e|safe }}</th></tr>
+      <tbody>
+      </table>
+      <p>
+      <a class="pure-button" href="{{ url_for('worklog_list') }}">返回</a>
+</div>
+
+{% endblock %}
