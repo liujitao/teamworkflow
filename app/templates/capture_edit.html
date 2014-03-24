@@ -8,8 +8,12 @@
 	 	<fieldset>
             <h4>{{ form.location_id.label }}</h4>
             {{ render_field(form.location_id) }}
+            <h4>{{ form.model_id.label }}</h4>
+            {{ render_field(form.model_id) }}
             <h4>{{ form.hostname.label }}</h4> 
             {{ render_field(form.hostname, class="pure-input-1-3", placeholder="格式: wx-g4-120-101") }}
+            <h4>{{ form.idc_sn.label }}</h4>
+            {{ render_field(form.idc_sn, class="pure-input-1-3") }}
             <h4>{{ form.nic1.label }}</h4>
             {{ render_field(form.nic1, class="pure-input-1-3") }}
             <h4>{{ form.nic2.label }}</h4>

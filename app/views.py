@@ -97,9 +97,12 @@ def user_list():
 @login_required
 def user_add():
 	form = UserEditForm(request.form)
+	form.team_id.choices = [(1, u'管理'), (2, u'机房运维'), (3, u'采集'), (4, u'网络存储')]
+	form.team_id.choices.insert(0, (0, u'- 指定团队 -'))
 
 	if form.validate_on_submit():
-		user = User(form.name.data, form.email.data, form.qq.data, form.mobile.data, form.password.data)
+		user = User(form.name.data, form.email.data, form.qq.data, form.mobile.data, \
+			form.password.data, form.team_id.choices.data)
 		db.session.add(user)
 		db.session.commit()
 		return redirect(url_for('user_list'))
@@ -111,6 +114,8 @@ def user_add():
 def user_edit(id):
 	user = User.query.filter(User.id==id).first()
 	form = UserEditForm(request.form, user)
+	form.team_id.choices = [(1, u'管理'), (2, u'机房运维'), (3, u'采集'), (4, u'网络存储')]
+	form.team_id.choices.insert(0, (0, u'- 指定团队 -'))
 
 	if form.validate_on_submit():
 		form.populate_obj(user)
@@ -213,6 +218,9 @@ def capture_add():
 	form.location_id.choices = [(1, u'无锡新区'), (2, u'无锡国际'), (3, u'北京'), (4, u'北京备份'), \
 		(5, u'上海'), (6, u'上海备份'), (7, u'广州'), (8, u'长沙'), (9, u'安徽'), (10, u'山西')]
 	form.location_id.choices.insert(0, (0, u'- 指定位置 -'))
+	form.model_id.choices = [(1, u'dell r410'), (2, u'dell r710'), (3, u'老双子星'), (4, u'超微双子星'), \
+		(5, u'dell r420'), (6, u'dell r720')]
+	form.model_id.choices.insert(0, (0, u'- 指定型号 -'))
 
 	if form.validate_on_submit():
 		capture = Capture()
@@ -311,6 +319,7 @@ def schedule_init_commit():
 					day[i-1] = ((i - 3) % 4) if ((i - 3) % 4) in [1, 2] else 0
 
 		#保存数据库
+		schedule.order_id = id
 		schedule.name = name	
 		schedule.year = year
 		schedule.month = month
@@ -334,7 +343,7 @@ def schedule_init_commit():
 @app.route('/json/schedule/edit_commit/', methods=['GET', 'POST'])
 @login_required
 def schedule_edit_commit():
-	#print request.json['year'], request.json['month'], request.json['staff']
+	print request.json['year'], request.json['month'], request.json['staff']
 	'''
 	staff [
 		{'id': 1, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0'},
@@ -346,7 +355,7 @@ def schedule_edit_commit():
 
 	for staff in request.json['staff']:
 		schedule = Schedule.query.filter(Schedule.year==request.json['year'], \
-			Schedule.month==request.json['month'], Schedule.id==int(staff['id'])).first()
+			Schedule.month==request.json['month'], Schedule.order_id==int(staff['id'])).first()
 
 		schedule.list = staff['list']
 		schedule.morning_r = 0 if len([i for i in staff['list'].split(',') if i in ['1', '5']]) == 0 \
@@ -408,7 +417,7 @@ def schedule_list():
 @app.route('/schedule/add/', methods=['GET', 'POST'])
 @login_required
 def schedule_add():
-	users = User.query.order_by(User.id).all()
+	users = User.query.filter(User.team_id==2, User.active==1).order_by(User.id).all()
 	return render_template('schedule_add.html', users=users)
 
 @app.route('/schedule/edit/<int:year>/<int:month>/', methods=['GET', 'POST'])

@@ -13,15 +13,17 @@ class User(db.Model):
 	qq = db.Column(db.String(40), unique=True)
 	mobile = db.Column(db.String(40), unique=True)
 	pwdhash = db.Column(db.String(40))
-	team = db.Column(db.Integer) # 0管理 1机房运维 2采集 3网络存储
+	team_id = db.Column(db.Integer, default=1) # 0管理 1机房运维 2采集 3网络存储
+	active = db.Column(db.Integer, default=1)  # 0锁定 1激活
 
-	def __init__(self, name, email, qq, mobile, password, team):
+	def __init__(self, name, email, qq, mobile, password, team_id, active):
 		self.name = name
 		self.email = email.lower()	
 		self.qq = qq
 		self.mobile = mobile
 		self.set_password(password)
-		self.team = team
+		self.team_id = team_id
+		self.active = active
 
 	def __repr__(self):
 		return '<User %r>' % (self.name)
@@ -78,7 +80,7 @@ class Capture(db.Model):
 	location_id = db.Column(db.Integer)
 	idc_sn = db.Column(db.String(40))
 	hostname = db.Column(db.String(40), unique=True)
-	model = db.Column(db.Integer, default=0) # 1r410 2r710 3双子星 4超微双子星 5r420 6r720
+	model_id = db.Column(db.Integer, default=0) # 1r410 2r710 3双子星 4超微双子星 5r420 6r720
 	nic1 = db.Column(db.String(40))
 	nic2 = db.Column(db.String(40))
 	nic3 = db.Column(db.String(40))
@@ -96,6 +98,7 @@ class Capture(db.Model):
 class Schedule(db.Model):
 	__tablename__ = 'schedule'
 	id = db.Column(db.Integer, primary_key=True, index=True)
+	order_id = db.Column(db.Integer) # 值班人员id，从1开始
 	name = db.Column(db.String(40))
 	year = db.Column(db.Integer)
 	month = db.Column(db.Integer)

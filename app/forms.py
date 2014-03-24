@@ -25,6 +25,7 @@ class UserEditForm(Form):
 	qq = TextField(u'QQ号码')
 	mobile = TextField(u'移动电话')
 	password = TextField(u'用户密码')
+	team_id = SelectField(u'所属团队', coerce=int)
 	# 扩展验证 wtform
 
 class LoginForm(Form):
@@ -33,6 +34,8 @@ class LoginForm(Form):
 
 class CaptureEditForm(Form):
 	location_id = SelectField(u'IDC位置', coerce=int)
+	model_id = SelectField(u'设备型号', coerce=int)
+	idc_sn = TextField(u'IDC SN')
 	hostname = TextField(u'主机名')
 	nic1 = TextField(u'外网')
 	nic2 = TextField(u'内网')

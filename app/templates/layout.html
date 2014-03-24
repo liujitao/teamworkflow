@@ -28,16 +28,22 @@
         <li><a><i class="fa fa-home"></i> </a></li>
         <li><a href="{{ url_for('worklog_list') }}">监控日报</a></li>       
         <li><a href="{{ url_for('schedule_list') }}">监控排班</a>
-             {% if current_user.email == 'admin@tvmining.com' %}
+             {% if current_user.team_id == 1 %}
             <ul>
-                <li><a href="{{ url_for('schedule_add') }}">排班</a></li>
+                <li><a href="{{ url_for('schedule_add') }}">添加排班</a></li>
             </ul>
             {% endif %}
         </li>
         {% if current_user.is_authenticated() %}
         <li><a href="{{ url_for('user_list') }}">团队成员</a>
+            {% if current_user.team_id == 1 %}
+            <ul>
+                <li><a href="{{ url_for('user_add') }}">添加成员</a></li>
+            </ul>
+            {% endif %}
+        </li>
         <li><a href="{{ url_for('capture_list') }}">采集&直播流</a>
-            {% if current_user.email == 'admin@tvmining.com' or current_user.email == 'fanzhantao@tvmining.com' %}
+            {% if current_user.team_id == 1 or current_user.team_id == 3 %}
             <ul>
                 <li><a href="{{ url_for('capture_add') }}">添加设备</a></li>
             </ul>

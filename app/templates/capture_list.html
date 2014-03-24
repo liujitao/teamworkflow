@@ -8,6 +8,7 @@
 			<tr align="center">
 				<th>ID</th>
 				<th>IDC位置</th>
+				<th>设备型号</th>
 				<th>主机名</th>
 				<th>外网</th>
 				<th>内网</th>
@@ -26,24 +27,33 @@
 		{% for capture in captures %}
 			<tr>
 				<th>{{ capture.id }}</th>
-				{% if capture.location_id == 1 %}<th>无锡新区</th>
-				{% elif capture.location_id == 2 %}<th>无锡国脉</th>
-				{% elif capture.location_id == 3 %}<th>北京</th>
-				{% elif capture.location_id == 4 %}<th>北京备份</th>
-				{% elif capture.location_id == 5 %}<th>上海</th>
-				{% elif capture.location_id == 6 %}<th>上海备份</th>
-				{% elif capture.location_id == 7 %}<th>广州</th>
-				{% elif capture.location_id == 8 %}<th>长沙</th>
-				{% elif capture.location_id == 9 %}<th>安徽</th>
-				{% elif capture.location_id == 10 %}<th>山西</th>
-				{% else %}<th></th>
-				{% endif %}
-				<th><a href="{{ url_for('capture_detail', id=capture.id) }}">{{ capture.hostname }}</a></th>
-				<th>{{ capture.nic1 }}</th>
-				<th>{{ capture.nic2 }}</th>
-				<th>{{ capture.nic3 }}</th>
+				<th>
+				{% if capture.location_id == 1 %}无锡新区
+				{% elif capture.location_id == 2 %}无锡国脉
+				{% elif capture.location_id == 3 %}北京
+				{% elif capture.location_id == 4 %}北京备份
+				{% elif capture.location_id == 5 %}上海
+				{% elif capture.location_id == 6 %}上海备份
+				{% elif capture.location_id == 7 %}广州
+				{% elif capture.location_id == 8 %}长沙
+				{% elif capture.location_id == 9 %}安徽
+				{% elif capture.location_id == 10 %}山西
+				{% endif %}</th>
+				<th>
+                  {% if capture.model_id == 1 %}dell r410
+                  {% elif capture.model_id == 1 %}dell r710
+                  {% elif capture.model_id == 1 %}老双子星 
+                  {% elif capture.model_id == 1 %}超微双子星 
+                  {% elif capture.model_id == 1 %}dell r420 
+                  {% elif capture.model_id == 1 %}dell r720 
+                  {% endif %}
+                </th>
+				<th align="left"><a href="{{ url_for('capture_detail', id=capture.id) }}">{{ capture.hostname }}</a></th>
+				<th align="left">{{ capture.nic1 }}</th>
+				<th align="left">{{ capture.nic2 }}</th>
+				<th align="left">{{ capture.nic3 }}</th>
 				<th>{{ capture.category }}</th>
-				<th>{{ capture.password }}</th>
+				<th align="left">{{ capture.password }}</th>
 				<th>{{ capture.channel }}</th>
 				{% if current_user.is_authenticated() and capture.updated_user == current_user.name %} 
 				<th><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
