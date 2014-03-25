@@ -30,7 +30,7 @@
 				<th>{{ worklog.updated_user }}</th>
 				<th>{{ worklog.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
 				<th>{{ worklog.updated_count }}</th>
-				{% if current_user.is_authenticated() and worklog.updated_user == current_user.name %} 
+				{% if current_user.is_authenticated() and worklog.created_user == current_user.name %} 
 				<th><a href="{{ url_for('worklog_edit', id=worklog.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
 				{% else %}
 				<th></th>

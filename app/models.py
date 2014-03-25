@@ -13,17 +13,15 @@ class User(db.Model):
 	qq = db.Column(db.String(40), unique=True)
 	mobile = db.Column(db.String(40), unique=True)
 	pwdhash = db.Column(db.String(40))
-	team_id = db.Column(db.Integer, default=1) # 0管理 1机房运维 2采集 3网络存储
-	active = db.Column(db.Integer, default=1)  # 0锁定 1激活
+	team_id = db.Column(db.Integer, default=1) # 1管理 2机房运维 3采集 4网络存储
 
-	def __init__(self, name, email, qq, mobile, password, team_id, active):
+	def __init__(self, name, email, qq, mobile, password, team_id):
 		self.name = name
 		self.email = email.lower()	
 		self.qq = qq
 		self.mobile = mobile
 		self.set_password(password)
 		self.team_id = team_id
-		self.active = active
 
 	def __repr__(self):
 		return '<User %r>' % (self.name)

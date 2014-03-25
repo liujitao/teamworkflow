@@ -55,7 +55,7 @@
 				<th>{{ capture.category }}</th>
 				<th align="left">{{ capture.password }}</th>
 				<th>{{ capture.channel }}</th>
-				{% if current_user.is_authenticated() and capture.updated_user == current_user.name %} 
+				{% if current_user.is_authenticated() and capture.team_id in [1, 3] %} 
 				<th><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
 				{% else %}
 				<th></th>

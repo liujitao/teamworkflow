@@ -101,8 +101,8 @@ def user_add():
 	form.team_id.choices.insert(0, (0, u'- 指定团队 -'))
 
 	if form.validate_on_submit():
-		user = User(form.name.data, form.email.data, form.qq.data, form.mobile.data, \
-			form.password.data, form.team_id.choices.data)
+		user = User(form.name.data, form.team_id.data, form.email.data, form.qq.data, form.mobile.data, \
+			form.password.data)
 		db.session.add(user)
 		db.session.commit()
 		return redirect(url_for('user_list'))
@@ -119,8 +119,10 @@ def user_edit(id):
 
 	if form.validate_on_submit():
 		form.populate_obj(user)
-		if form.password.data is None:
-			user.password = current_user.password
+
+		if form.password.data != '':
+			user.set_password(form.password.data)
+		
 		db.session.commit()
 		return redirect(url_for('user_list'))
 

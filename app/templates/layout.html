@@ -28,7 +28,7 @@
         <li><a><i class="fa fa-home"></i> </a></li>
         <li><a href="{{ url_for('worklog_list') }}">监控日报</a></li>       
         <li><a href="{{ url_for('schedule_list') }}">监控排班</a>
-             {% if current_user.team_id == 1 %}
+             {% if current_user.is_authenticated() and current_user.team_id == 1 %}
             <ul>
                 <li><a href="{{ url_for('schedule_add') }}">添加排班</a></li>
             </ul>
@@ -43,7 +43,7 @@
             {% endif %}
         </li>
         <li><a href="{{ url_for('capture_list') }}">采集&直播流</a>
-            {% if current_user.team_id == 1 or current_user.team_id == 3 %}
+            {% if current_user.team_id in [1, 3] %}
             <ul>
                 <li><a href="{{ url_for('capture_add') }}">添加设备</a></li>
             </ul>
