@@ -60,6 +60,8 @@ def worklog_add():
 		form.populate_obj(worklog)
 		worklog.created_user = current_user.name
 		worklog.updated_user = current_user.name
+		worklog.created_time = datetime.datetime.now()
+		worklog.updated_time = datetime.datetime.now()
 		worklog.updated_count = 0
 		db.session.add(worklog)
 		db.session.commit()
@@ -157,7 +159,7 @@ def file_upload():
 @app.route('/wiki/<int:page>/', methods=['GET', 'POST'])
 def wiki_list(page=1):
 	record_per_page = app.config['RECORD_PER_PAGE']
-	pagination = Wiki.query.order_by(Wiki.id.desc()).paginate(page, record_per_page, False)
+	pagination = Wiki.query.order_by(Wiki.category_id, Wiki.id.desc()).paginate(page, record_per_page, False)
 	wikis = pagination.items
 	return render_template('wiki_list.html', pagination=pagination, record_per_page=record_per_page, \
 		wikis=wikis)
@@ -174,6 +176,8 @@ def wiki_add():
 		form.populate_obj(wiki)
 		wiki.created_user = current_user.name
 		wiki.updated_user = current_user.name
+		wiki.created_time = datetime.datetime.now()
+		wiki.updated_time = datetime.datetime.now()
 		wiki.updated_count = 0
 		db.session.add(wiki)
 		db.session.commit()
@@ -229,6 +233,8 @@ def capture_add():
 		form.populate_obj(capture)
 		capture.created_user = current_user.name
 		capture.updated_user = current_user.name
+		capture.created_time = datetime.datetime.now()
+		capture.updated_time = datetime.datetime.now()
 		capture.updated_count = 0
 		db.session.add(capture)
 		db.session.commit()
@@ -334,6 +340,8 @@ def schedule_init_commit():
  		schedule.evening_r = len([i for i in day if i == 2])
 		schedule.created_user = current_user.name
 		schedule.updated_user = current_user.name
+		schedule.created_time = datetime.datetime.now()
+		schedule.updated_time = datetime.datetime.now()
 		schedule.updated_count = 0
 
 		db.session.add(schedule)
@@ -364,6 +372,7 @@ def schedule_edit_commit():
 			else len([i for i in staff['list'].split(',') if i in ['1', '5']])
  		schedule.evening_r = len([i for i in staff['list'].split(',') if i in ['2', '5']])
  		schedule.updated_user = current_user.name
+ 		schedule.updated_time = datetime.datetime.now()
  		schedule.updated_count += 1
 		db.session.commit()
 
