@@ -15,9 +15,9 @@
 				<th>更新时间</th>
 				<th>更新次数</th>
 				{% if current_user.is_authenticated() %}
-				<th>编辑 <a href="{{ url_for('wiki_add') }}"><i class="fa fa-plus-square-o"></i></a></th>
+				<th>功能 <a href="{{ url_for('wiki_add') }}"><i class="fa fa-plus-square-o"></i></a></th>
 				{% else %}
-				<th>编辑</th>
+				<th>功能</th>
 				{% endif %}
 			</tr>
 		</thead>

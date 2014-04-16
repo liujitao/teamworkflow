@@ -12,7 +12,7 @@
                   </th>
             </tr>
             <tr align="center" bgcolor="#FFFFFF">
-                  <th>{% if current_user.is_authenticated() and current_user.email == 'admin@tvmining.com' %}<a href="{{ url_for('schedule_edit', year=schedule.year, month=schedule.month)}}">编辑</a>{% endif %}</th>
+                  <th>{% if current_user.is_authenticated() and current_user.team_id == 1 %}<a href="{{ url_for('schedule_edit', year=schedule.year, month=schedule.month)}}">编辑</a>{% endif %}</th>
                   <th colspan={{ schedule.count - 25 }} style="border:1px solid #CCCCCC;">{{ schedule.month - 1 }}月</th>
                   <th colspan=25 style="border:1px solid #CCCCCC;">{{ schedule.month }}月</th>
                   <th colspan=3 style="border:1px solid #CCCCCC;">正常班次</th>

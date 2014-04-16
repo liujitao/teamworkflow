@@ -12,7 +12,7 @@ class WorkLogEditForm(Form):
 	content_b = TextAreaField(u'直播流&采集')
 	content_c = TextAreaField(u'北美SunTV')
 	content_d = TextAreaField(u'监控服务器变更')
-	content_e = TextAreaField(u'iSearch')
+	content_e = TextAreaField(u'其他')
 
 class WikiEditForm(Form):
 	title = TextField(u'标题')

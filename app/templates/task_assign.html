@@ -1,0 +1,149 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="pure-u-1">
+<form class="pure-form">
+      <table class="pure-table pure-table-horizontal">
+            <tr><th>任务简述</th><th colspan=7>{{ task.title }}</th></tr>
+            <tr>
+                  <th>申请人</th><th align="left">{{ task.name }}</th>
+                  <th>申请团队</th><th align="left">{{ task.team }}</th>
+                  <th>移动电话</th><th align="left">{{ task.mobile }}</th>
+                  <th>电子邮箱</th><th align="left">{{ task.email }}</th>
+            </tr>
+            <tr>
+                  <th>申请时间</th><th align="left" colspan=3>{{ task.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
+                  <th>计划完成时间</th><th align="left" colspan=3>{{ task.planned_time.strftime('%Y-%m-%d') }}</th>
+            </tr>
+            <tr><th>工单类型</th>
+            {% if task.type == 1 %}<th align="left" colspan=7>资源申请</th>{% endif %}
+            {% if task.type == 2 %}<th align="left" colspan=7>资源回收</th>{% endif %}
+            {% if task.type == 3 %}<th align="left" colspan=7>运维巡检</th>{% endif %}
+            {% if task.type == 4 %}<th align="left" colspan=7>故障处理&运维部署</th>{% endif %}
+            </tr>
+            {% if task.type == 1 %}
+            <tr>
+                  <th>资源到期时间</th>
+                  <th align="left" colspan=7>{{ task.expire_time.strftime('%Y-%m-%d') }}</th>
+            </tr>
+            <tr>
+                  <th>硬件</th>
+                  <th colspan=7><textarea name="hardware" id="kindeditor_hardware">{{ task.hardware|safe }}</textarea></th>
+            </tr>
+            <tr>
+                  <th>网络访问</th>
+                  <th colspan=7><textarea name="network" id="kindeditor_network">{{ task.network|safe }}</textarea></th>
+            </tr>
+            <tr>
+                  <th>存储访问</th>
+                  <th colspan=7><textarea name="storage" id="kindeditor_storage">{{ task.storage|safe }}</textarea></th>
+            </tr>
+            <tr>
+                  <th>域名解析</th>
+                  <th colspan=7><textarea name="domain" id="kindeditor_domain">{{ task.storage|safe }}</textarea></th>
+            </tr>
+            {% endif %}
+
+            {% if task.type == 2 %}
+            <tr>
+                  <th>资源回收</th>
+                  <th colspan=7><textarea name="recycle" id="kindeditor_recycle">{{ task.recycle|safe }}</textarea></th>
+            <tr>
+            {% endif %}
+
+            {% if task.type == 4 %}
+            <tr>
+                  <th>故障处理&运维部署</th>
+                  <th colspan=7><textarea name="handle" id="kindeditor_handle">{{ task.handle|safe }}</textarea></th>
+            <tr>
+            {% endif %}
+
+            <tr>
+                  <th id="text_assign">指派执行人员(不多于5人)</th>
+                  <th colspan=7 align="left">
+                  {% for user in users %}
+                        <input type="checkbox" id="checkbox_{{ user.id }}" value="{{ user.id }}"> {{ user.name }}
+                        {% if loop.index % 10  == 0 %}<p>{% endif %}
+                  {% endfor %}
+                  </th>
+            </tr>
+
+      </table>
+      <p>
+      <a class="pure-button pure-button-primary" id="button_submit">提交</a>
+      <a class="pure-button" href="{{ url_for('task_list') }}">返回</a>
+      </form>
+</div>
+
+<script type="text/javascript">
+$(function(){
+      $('#button_submit').click(function(){
+            if ($('input[type=checkbox]:checked').length > 5 ) {
+                  $('#text_assign').attr('style', 'color:red');
+            } else {
+
+            switch ({{ task.type }}) {
+                  case 1: 
+                        var hardware = $('#kindeditor_hardware').val();
+                        var network = $('#kindeditor_network').val();
+                        var storage = $('#kindeditor_storage').val();
+                        var domain = $('#kindeditor_domain').val();
+                        var recycle = '';
+                        var handle = '';
+                        break;
+                  case 2:
+                        var hardware = '';
+                        var network = '';
+                        var storage = '';
+                        var domain = '';
+                        var recycle = $('#kindeditor_recycle').val();
+                        var handle = '';
+                        break;
+                  case 4: 
+                        var hardware = '';
+                        var network = '';
+                        var storage = '';
+                        var domain = '';
+                        var recycle = '';
+                        var handle = $('#kindeditor_handle').val(); 
+                        break;
+            }
+       
+            var execute = [];
+            $('input[type=checkbox]:checked').each(function(idx){
+                  execute[idx] = $(this).val();
+            });
+
+            var post_data = {
+                  'id': {{ task.id }},
+                  'type':  {{ task.type }},
+                  'hardware': hardware,
+                  'network': network,
+                  'storage': storage,
+                  'domain': domain,
+                  'recycle': recycle,
+                  'handle': handle,
+                  'execute': execute,
+            };
+
+            console.log(post_data);
+
+            $.ajax({
+                  type: 'POST',
+                  dataType: 'json',
+                  contentType: 'application/json;charset=utf-8',
+                  url: $SCRIPT_ROOT + "{{ url_for('task_assgin_commit') }}",
+                  data: JSON.stringify(post_data),
+                  success: function(data) {
+                        if (data.json) {
+                              window.location.href = "{{ url_for('task_list') }}"
+                        };    
+                  },
+            });
+
+            }
+      });
+});
+</script>
+
+{% endblock %}

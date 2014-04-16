@@ -5291,7 +5291,7 @@ KEditor.prototype = {
 		isReadonly = _undef(isReadonly, true);
 		var self = this, edit = self.edit, doc = edit.doc;
 		if (self.designMode) {
-			self.toolbar.disableAll(isReadonly, []);
+			self.toolbar.disableAll(isReadonly, ['fullscreen']);
 		} else {
 			_each(self.noDisableItems, function() {
 				self.toolbar[isReadonly ? 'disable' : 'enable'](this);

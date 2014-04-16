@@ -1,0 +1,205 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="pure-u-1">
+<form class="pure-form">
+      <table class="pure-table">
+      <div id="base">
+            <h4>任务简述</h4><input type="text" class="pure-input-1-4" id="input_title">
+            {% if current_user.is_authenticated() %}
+                  <h4>申请人</h4><input type="text" id="input_name" value="{{ current_user.name }}">
+                  <h4>所属团队/部门</h4><input type="text" id="input_team" value="运维部">
+                  <h4>移动电话</h4><input type="text" id="input_mobile" value="{{ current_user.mobile }}">
+                  <h4>电子邮箱</h4><input type="text" id="input_email" value="{{ current_user.email }}">
+            {% else %}
+                  <h4>申请人</h4><input type="text" id="input_name">
+                  <h4>所属团队/部门</h4><input type="text" id="input_team">
+                  <h4>移动电话</h4><input type="text" id="input_mobile">
+                  <h4>电子邮箱</h4><input type="text" id="input_email">
+            {% endif %}
+            <h4>期望工期(工作日)</h4>
+            <select name="expect_day" id="select_expect_day">
+                  <option value="2">2天</option>
+                  <option value="3">3天</option>
+                  <option value="3">4天</option>
+                  <option value="5" selected="selected">5天</option>
+                  <option value="10">10天</option>
+                  <option value="15">15天</option>
+                  <option value="20">20天</option>
+            </select>
+            <h4>工单类型</h4>
+            <input type="radio" name="type" id="radio_apply" value="1"> 资源申请
+            <input type="radio" name="type" id="radio_recycle" value="2"> 资源回收
+            <input type="radio" name="type" id="radio_check" checked="checked" value="3"> 运维巡检
+            <input type="radio" name="type" id="radio_handle" value="4"> 故障处理&运维部署
+      </div>
+      <div id="apply">
+            <h4>硬件</h4>
+            <textarea name="hardware" id="kindeditor_hardware">
+             <p><b>服务器用途:</b> 测试 / 生产</p>
+             <p><b>服务器数量:</b> 物理机 台, 虚拟机 台</p>
+             <p><b>服务器配置:</b> cpu 个, 内存 G, 硬盘空间 G</p>
+             <p><b>外部存储:</b> 硬盘空间 T</p>
+             <p><b>操作系统:</b> centos 6.2 64位 / windows 2008 64位</p>
+             <p><b>其他:</b> ......</p>
+             <p style="color:red">* 根据实际情况修改，如果没有此项需求，请清空全部内容!</p>
+            </textarea>
+            <h4>网络访问</h4>
+            <textarea name="network" id="kindeditor_network">
+             <p><b>需要访问互联网:</b> 是 / 否 ?<p>
+             <p><b>需要开放对外访问(nat):</b> 开放 端口 / 开放全部端口 ?</p>
+             <p><b>需要开放对外访问(公网接口):</b> 开放 端口 / 开放全部端口 ?</p>
+             <p><b>需要开放内部网段访问:</b> 10.0.60.0 / 10.10.72.0 / 10.10.111 / ...... ?</p>
+             <p style="color:red">* 根据实际情况修改，如果没有此项需求，请清空全部内容!</p>
+            </textarea>
+            <h4>存储访问</h4>
+            <textarea name="storage" id="kindeditor_storage">
+             <p><b>需要挂载内部存储:</b> TV资源 / 广告资源 / 直播流资源 ?</p>
+             <p style="color:red">* 根据实际情况修改，如果没有此项需求，请清空全部内容!</p>
+            </textarea>
+            <h4>域名解析</h4>
+            <textarea name="domain" id="kindeditor_domain">
+             <p><b>需要外网域名:</b> www.tvmining.com , www.tvmining.cn , ......?</p>
+             <p><b>需要内网域名:</b> api.editor.tvmining.com , team.op.tvmining.com , ...... ?</p>
+             <p style="color:red">* 根据实际情况修改，如果没有此项需求，请清空全部内容!</p>
+            </textarea>
+            <p>
+            <h4>使用时间 [ 测试用途不超过12个月，生产用途选择36个月 ]</h4>
+            <select name="expire_month" id="select_expire_month">
+                  <option value="1" checked="checked">1个月</option>
+                  <option value="3">3个月</option>
+                  <option value="6">6个月</option>
+                  <option value="12">12个月</option>
+                  <option value="36">36个月</option>
+            </select>
+      </div>
+      <div id="recycle">
+            <h4>资源回收</h4>
+            <textarea name="recycle" id="kindeditor_recycle">
+             <p><b>服务器系统复位: </b>wx-f4-60-15, wx-f4-60-16, wx-f4-60-17 ......</p>
+             <p><b>服务器下架: </b>wx-f4-60-15, wx-f4-60-16, wx-f4-60-17 ...... , 放置地点 库房</p>
+             <p><b>存储下架: </b>机头wx-f4-60-30, dell md1200 ...... , 放置地点 库房</p>
+             <p><b>网络资源回收: </b>去除上述服务器的nat指向</p>
+             <p><b>域名资源回收: </b>去除上述服务器的dns指向</p>
+             <p><b>存储资源回收: </b>去除上述服务器的nfs访问权限</p>
+             <p><b>运维监控配置: </b>去除上述设备的监控</p>
+             <p style="color:red">* 根据实际情况修改内容!</p>
+            </textarea>
+      </div>
+      <div id="handle">
+            <h4>故障处理&运维部署</h4>
+            <textarea name="handle" id="kindeditor_handle">
+             <p>服务器wx-f4-60-15当机, 重启后仍未恢复, 请现场处理</p>
+             <p>服务器wx-f4-60-15部署直播流应用</p>
+             <p>服务器wx-f4-60-15部署oracle数据库应用</p>
+             <p style="color:red">* 根据实际情况修改内容!</p>  
+            </textarea>
+      </div>
+      </table>
+      <p>
+      <a class="pure-button pure-button-primary" id="button_submit">提交</a>
+      <a class="pure-button" href="{{ url_for('task_list') }}">返回</a>
+      </form>
+</div>
+
+<script type="text/javascript">
+$(function(){
+      $('div#apply').hide();
+      $('div#recycle').hide();
+      $('div#handle').hide();
+
+      $('input[name=type]').change(function(){
+            var choice = $('input[name=type]:checked').val();
+            switch (choice) {
+                  case '1': $('div#apply').show(); $('div#recycle').hide(); $('div#handle').hide(); break;
+                  case '2': $('div#apply').hide(); $('div#recycle').show(); $('div#handle').hide(); break;
+                  case '3': $('div#apply').hide(); $('div#recycle').hide(); $('div#handle').hide(); break;
+                  case '4': $('div#apply').hide(); $('div#recycle').hide(); $('div#handle').show(); break;
+            }
+      });
+
+      $('#button_submit').click(function(){
+            var title = $('#input_title').val();
+            var name = $('#input_name').val();
+            var team = $('#input_team').val();
+            var mobile = $('#input_mobile').val();
+            var email = $('#input_email').val();
+            var expect_day = $('#select_expect_day').val();
+            var type = $('input[name=type]:checked').val();
+
+            var choice = $('input[name=type]:checked').val();
+            switch (choice) {
+                  case '1': 
+                        var hardware = $('#kindeditor_hardware').val();
+                        var network = $('#kindeditor_network').val();
+                        var storage = $('#kindeditor_storage').val();
+                        var domain = $('#kindeditor_domain').val();
+                        var expire_month = $('#select_expire_month').val();
+                        var recycle = '';
+                        var handle = '';
+                        break;
+                  case '2':
+                        var hardware = '';
+                        var network = '';
+                        var storage = '';
+                        var domain = '';
+                        var expire_month = '';
+                        var recycle = $('#kindeditor_recycle').val();
+                        var handle = '';
+                        break;
+                  case '4': 
+                        var hardware = '';
+                        var network = '';
+                        var storage = '';
+                        var domain = '';
+                        var expire_month = '';
+                        var recycle = '';
+                        var handle = $('#kindeditor_handle').val(); 
+                        break;
+            }
+       
+            var post_data = {
+                  'title': title,
+                  'name': name,
+                  'team': team,
+                  'mobile': mobile,
+                  'email': email,
+                  'expect_day': expect_day,
+                  'type': type,
+                  'hardware': hardware,
+                  'network': network,
+                  'storage': storage,
+                  'domain': domain,
+                  'expire_month': expire_month,
+                  'recycle': recycle,
+                  'handle': handle,
+            };
+
+            console.log(post_data);
+
+            if (title != "" && name != "" && team != "" && mobile != "" && email != "") {
+                  $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json;charset=utf-8',
+                        url: $SCRIPT_ROOT + "{{ url_for('task_create_commit') }}",
+                        data: JSON.stringify(post_data),
+                        success: function(data) {
+                              if (data.json) {
+                                 window.location.href = "{{ url_for('task_list') }}"
+                              };    
+                        },
+                  });
+            } else {
+                  if (title == "") { $('#input_title').attr('style', 'border-style: solid; border-color: red;'); }
+                  if (name == "") { $('#input_name').attr('style', 'border-style: solid; border-color: red;'); }
+                  if (team == "") { $('#input_team').attr('style', 'border-style: solid; border-color: red;'); }
+                  if (mobile == "") { $('#input_mobile').attr('style', 'border-style: solid; border-color: red;'); }
+                  if (email == "") { $('#input_email').attr('style', 'border-style: solid; border-color: red;'); }
+            }
+
+      });
+});
+</script>
+
+{% endblock %}

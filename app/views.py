@@ -7,7 +7,7 @@ from flask import render_template, redirect, url_for, request, jsonify, session,
 from flask.ext.sqlalchemy import Pagination
 from flask.ext.login import login_user, logout_user, current_user, login_required
 
-from models import WorkLog, Wiki, User, Capture, Schedule
+from models import WorkLog, Wiki, User, Capture, Schedule, Task
 from forms import WorkLogEditForm, UserEditForm, WikiEditForm, CaptureEditForm, LoginForm
 from app import app, db, login_manager
 
@@ -31,7 +31,7 @@ def login():
 		user = User.query.filter_by(email=request.form['email']).first()
 		if user and user.check_password(request.form['password']):
 			login_user(user)
-			return redirect(url_for('worklog_list'))
+			return redirect(url_for('index'))
 
 	return render_template('login.html', form=form)
 
@@ -92,7 +92,7 @@ def worklog_detail(id):
 
 @app.route('/user/', methods=['GET'])
 def user_list():
-	users = User.query.order_by(User.id).all()
+	users = User.query.filter(User.active==1).order_by(User.id).all()
 	return render_template('user_list.html', users=users)
 
 @app.route('/user/add/', methods=['GET', 'POST'])
@@ -353,7 +353,7 @@ def schedule_init_commit():
 @app.route('/json/schedule/edit_commit/', methods=['GET', 'POST'])
 @login_required
 def schedule_edit_commit():
-	print request.json['year'], request.json['month'], request.json['staff']
+	#print request.json['year'], request.json['month'], request.json['staff']
 	'''
 	staff [
 		{'id': 1, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0'},
@@ -451,3 +451,157 @@ def schedule_edit(year, month):
 
 	return render_template('schedule_edit.html', year=year, month=month, count=len(last_month)+len(this_month), \
 		last_month=last_month, this_month=this_month, staffs=schedules)
+
+@app.route('/task/', methods=['GET'])
+@app.route('/task/<int:page>/', methods=['GET', 'POST'])
+def task_list(page=1):
+	record_per_page = app.config['RECORD_PER_PAGE']
+	pagination = Task.query.order_by(Task.id.desc()).paginate(page, record_per_page, False)
+	tasks = pagination.items
+
+	ids = {}
+	for t in Task.query.all():
+		if t.executed_user_id:
+			ids[t.id] = t.executed_user_id.split(',')
+
+	return render_template('task_list.html', pagination=pagination, record_per_page=record_per_page, \
+		tasks=tasks, ids=ids)
+
+@app.route('/task/add', methods=['GET', 'POST'])
+def task_add():
+	return render_template('task_edit.html')
+
+@app.route('/task/assign/<int:id>/', methods=['GET', 'POST'])
+@login_required
+def task_assign(id):
+	task = Task.query.filter(Task.id==id).first()
+	users = User.query.filter(User.active==1, User.id != 1).all()
+	return render_template('task_assign.html', task=task, users=users)
+
+@app.route('/task/execute/<int:id>', methods=['GET', 'POST'])
+@login_required
+def task_execute(id):
+	task = Task.query.filter(Task.id==id).first()
+	return render_template('task_execute.html', task=task)
+
+@app.route('/task/audit/<int:id>',methods=['GET', 'POST'])
+@login_required
+def task_audit(id):
+	task = Task.query.filter(Task.id==id).first()
+	return render_template('task_audit.html', task=task)
+
+@app.route('/task/detail/<int:id>',methods=['GET'])
+def task_detail(id):
+	task = Task.query.filter(Task.id==id).first()
+	return render_template('task_detail.html', task=task)
+
+@app.route('/json/task/create_commit/', methods=['GET', 'POST'])
+def task_create_commit():
+	#print request.json['title'], request.json['name'],request.json['team'], request.json['mobile']
+	#print request.json['email'], request.json['expect_day'],request.json['type'], type(request.json['type'])
+	#print request.json['hardware']
+
+	task = Task()
+	task.title = request.json['title']
+	task.name = request.json['name']
+	task.team = request.json['team']
+	task.mobile = request.json['mobile']
+	task.email = request.json['email']
+	expect_day = int(request.json['expect_day'])
+	task.planned_time =  datetime.datetime.now() + datetime.timedelta(days=expect_day)
+	type = int(request.json['type'])
+	task.type = type
+
+	if type == 1:
+		task.hardware = request.json['hardware']
+		task.network = request.json['network']
+		task.storage = request.json['storage']
+		task.domain = request.json['domain']
+		expire_month = int(request.json['expire_month'])
+		task.expire_time =  datetime.datetime.now() + datetime.timedelta(days=expire_month*30)
+	elif type == 2:
+		task.recycle = request.json['recycle']
+	elif type == 4:
+		task.handle = request.json['handle']	
+
+	task.created_user = request.json['name']
+	task.created_time = datetime.datetime.now()
+	task.status = 1
+
+	db.session.add(task)
+	db.session.commit()
+
+	return jsonify(json=True)
+
+@app.route('/json/task/assgin_commit/', methods=['GET', 'POST'])
+@login_required
+def task_assgin_commit():
+	#print request.json['id'], request.json['execute']
+	#print request.json['hardware']
+
+	task = Task.query.filter(Task.id==request.json['id']).first()
+	type = int(request.json['type'])
+
+	if type == 1:
+		task.hardware = request.json['hardware']
+		task.network = request.json['network']
+		task.storage = request.json['storage']
+		task.domain = request.json['domain']
+	elif type == 2:
+		task.recycle = request.json['recycle']
+	elif type == 4:
+		task.handle = request.json['handle']
+
+	task.executed_user_id = ','.join(request.json['execute'])
+
+	ids = [int(id) for id in request.json['execute']]
+	names = []
+	for user in User.query.filter(User.active==1).all():
+		if user.id in ids:
+			names.append(user.name)
+
+	task.executed_user = ','.join(names)
+	task.assigned_user = current_user.name
+	task.assigned_time = datetime.datetime.now()
+	task.status = 2	
+
+	db.session.commit()
+
+	return jsonify(json=True)
+
+@app.route('/json/task/execute_commit/', methods=['GET', 'POST'])
+@login_required
+def task_execute_commit():
+	#print request.json['id'], request.json['type'], request.json['execute']
+	task = Task.query.filter(Task.id==request.json['id']).first()
+	task.execute = request.json['execute']
+	type = int(request.json['type'])
+
+	if type == 2:
+		task.executed_commit_user = current_user.name
+		task.executed_time = datetime.datetime.now()
+		task.status = 3
+
+	db.session.commit()
+
+	return jsonify(json=True)
+
+@app.route('/json/task/audit_commit/', methods=['GET', 'POST'])
+@login_required
+def task_audit_commit():
+	#print request.json['id'], request.json['audit']
+	task = Task.query.filter(Task.id==request.json['id']).first()
+	task.audit = request.json['audit']
+	type = int(request.json['type'])
+		
+	task.audited_user = current_user.name
+	task.audited_time = datetime.datetime.now()
+
+	if type == 2:
+		task.status = 5 # 回收资源类型工单，标志位5
+	else:
+		task.status = 4 # 其他类型工单，标志位4
+
+	db.session.commit()
+	
+	return jsonify(json=True)

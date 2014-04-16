@@ -14,14 +14,16 @@ class User(db.Model):
 	mobile = db.Column(db.String(40), unique=True)
 	pwdhash = db.Column(db.String(40))
 	team_id = db.Column(db.Integer, default=1) # 1管理 2机房运维 3采集 4网络存储
+	active = db.Column(db.Integer, default=1) # 0锁定 1激活  
 
-	def __init__(self, name, email, qq, mobile, password, team_id):
+	def __init__(self, name, email, qq, mobile, password, team_id, active):
 		self.name = name
 		self.email = email.lower()	
 		self.qq = qq
 		self.mobile = mobile
 		self.set_password(password)
 		self.team_id = team_id
+		self.active = active
 
 	def __repr__(self):
 		return '<User %r>' % (self.name)
@@ -102,7 +104,7 @@ class Schedule(db.Model):
 	month = db.Column(db.Integer)
 	days = db.Column(db.Integer)
 	type = db.Column(db.Integer) # 1轮班 2替班
-	list = db.Column(db.String(100)) # 每天值班标识, 0正常休, 1早班,  2晚班, 3换班, 4调休, 5早晚全班
+	list = db.Column(db.String(100)) # 每天值班标识, 0正常休, 1早班, 2晚班, 3换班, 4调休, 5早晚全班
 	morning = db.Column(db.Integer) # 计划早班数
 	evening = db.Column(db.Integer) # 计划晚班数
 	morning_r = db.Column(db.Integer) # 真实早班数
@@ -111,3 +113,34 @@ class Schedule(db.Model):
 	updated_user = db.Column(db.String(40), default='admin')
 	updated_time = db.Column(db.DateTime, default=datetime.datetime.now())
 	updated_count = db.Column(db.Integer)
+
+class Task(db.Model):
+	__tablename__ = 'task'
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	title = db.Column(db.String(40))
+	name = db.Column(db.String(40))
+	team = db.Column(db.String(40))
+	mobile = db.Column(db.String(40))
+	email = db.Column(db.String(40))
+	planned_time = db.Column(db.DateTime) # 计划完成时间
+	type = db.Column(db.Integer) # 1申请资源 2回收资源 3日常检查 4故障处理
+	hardware = db.Column(db.Text) # 虚拟机实体机,内存,硬盘,存储空间
+	network = db.Column(db.Text) # 访问互联网, 开通外网访问, 内网访问权限
+	storage = db.Column(db.Text) # 挂载公共存储数据 
+	domain = db.Column(db.Text) # 内网域名, 外网域名
+	expire_time = db.Column(db.DateTime) # 月转化为天
+	recycle = db.Column(db.Text) # 回收资源
+	handle = db.Column(db.Text) # 故障处理&运维部署
+	created_user = db.Column(db.String(40), default='admin') # 建立人员
+	created_time = db.Column(db.DateTime, default=datetime.datetime.now())
+	assigned_user = db.Column(db.String(40)) # 派单人
+	assigned_time = db.Column(db.DateTime)
+	execute = db.Column(db.Text) # 工单执行结果
+	executed_user_id = db.Column(db.String(40)) # 执行人员id 1,2,3
+	executed_user = db.Column(db.String(40)) # 执行人员
+	executed_commit_user = db.Column(db.String(40)) # 执行结果提交人
+	executed_time = db.Column(db.DateTime) # 执行完成时间
+	audit = db.Column(db.Text) # 工单审核结果
+	audited_user = db.Column(db.String(40)) # 审核人
+	audited_time = db.Column(db.DateTime) # 审核完成时间
+	status = db.Column(db.Integer) # 工单状态, 1已生成(未指派) 2已指派(未执行) 3已执行(未审核) 4已审核 5已回收(回收工单)

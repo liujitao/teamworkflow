@@ -16,10 +16,10 @@
 				<th>用途</th>
 				<th>登录密码</th>
 				<th>采集频道</th>
-				{% if current_user.is_authenticated() and (current_user.email == 'fanzhantao@tvmining.com' or current_user.email == 'admin@tvmining.com') %}
-				<th>编辑 <a href="{{ url_for('capture_add') }}"><i class="fa fa-plus-square-o"></i></a></th>
+				{% if current_user.is_authenticated() and current_user.team_id in [1, 3] %}
+				<th>功能 <a href="{{ url_for('capture_add') }}"><i class="fa fa-plus-square-o"></i></a></th>
 				{% else %}
-				<th>编辑</th>
+				<th>功能</th>
 				{% endif %}
 			</tr>
 		</thead>
@@ -55,7 +55,7 @@
 				<th>{{ capture.category }}</th>
 				<th align="left">{{ capture.password }}</th>
 				<th>{{ capture.channel }}</th>
-				{% if current_user.is_authenticated() and capture.team_id in [1, 3] %} 
+				{% if current_user.is_authenticated() and current_user.team_id in [1, 3] %} 
 				<th><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
 				{% else %}
 				<th></th>
