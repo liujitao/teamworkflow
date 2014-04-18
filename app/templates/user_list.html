@@ -21,22 +21,22 @@
 		<tbody>
 		{% for user in users  %}
 			<tr>
-				<th>{{ user.id }}</th>
-				<th>{{ user.name }}</th>
-				<th align="right">{{ user.email }}</th>
-				<th align="right">{{ user.qq }}</th>
-				<th>{{ user.mobile }}</th>
-				<th>
+				<td>{{ user.id }}</td>
+				<td>{{ user.name }}</td>
+				<td align="right">{{ user.email }}</td>
+				<td align="right">{{ user.qq }}</td>
+				<td>{{ user.mobile }}</td>
+				<td>
 				{% if user.team_id == 1 %}管理
 				{% elif user.team_id == 2 %}机房运维
 				{% elif user.team_id == 3 %}信号采集
 				{% elif user.team_id == 4 %}网络存储
 				{% endif %}
-				</th>
+				</td>
 				{% if current_user.is_authenticated() and ( user.email == current_user.email or current_user.team_id == 1) %} 
-				<th><a href="{{ url_for('user_edit', id=user.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
+				<td><a href="{{ url_for('user_edit', id=user.id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
 				{% else %}
-				<th></th>
+				<td></td>
 				{% endif %}
 			</tr>
 		{% endfor %}

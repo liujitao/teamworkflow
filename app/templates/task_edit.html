@@ -19,10 +19,18 @@
             {% endif %}
             <h4>期望工期(工作日)</h4>
             <select name="expect_day" id="select_expect_day">
+                  {% if current_user.is_authenticated() %}
+                  <option value="0" selected="selected">今天</option>
+                  <option value="1">1天</option>
+                  {% endif %}
                   <option value="2">2天</option>
                   <option value="3">3天</option>
                   <option value="3">4天</option>
+                  {% if current_user.is_authenticated() %}
+                  <option value="5">5天</option>
+                  {% else %}
                   <option value="5" selected="selected">5天</option>
+                  {% endif %}
                   <option value="10">10天</option>
                   <option value="15">15天</option>
                   <option value="20">20天</option>
@@ -74,6 +82,18 @@
             </select>
       </div>
       <div id="recycle">
+            <h4>关联资源申请</h4>
+                <select id="select_link_task">
+                {% if not id %}<option value="0" selected="selected">选择工单</option>{% endif %}
+                {% for key, task in tasks.iteritems() %}
+                    {% if key == id %}
+                    <option value="{{ key }}" selected="selected">#{{ key }}, {{ task.expired_time.strftime('%Y-%m-%d') }}到期, {{ task.title }}</option>
+                    {% else %}
+                    <option value="{{ key }}">#{{ key }}, {{ task.expired_time.strftime('%Y-%m-%d') }}到期, {{ task.title }}</option>
+                    {% endif %}
+                {% endfor %}
+                </select>
+                <span id="link_task"></span>
             <h4>资源回收</h4>
             <textarea name="recycle" id="kindeditor_recycle">
              <p><b>服务器系统复位: </b>wx-f4-60-15, wx-f4-60-16, wx-f4-60-17 ......</p>
@@ -108,6 +128,12 @@ $(function(){
       $('div#recycle').hide();
       $('div#handle').hide();
 
+      {% if id %}
+        $('#radio_check').removeAttr('checked')
+        $('#radio_recycle').attr('checked', 'checked');
+        $('div#recycle').show();
+      {% endif %}
+
       $('input[name=type]').change(function(){
             var choice = $('input[name=type]:checked').val();
             switch (choice) {
@@ -136,6 +162,7 @@ $(function(){
                         var domain = $('#kindeditor_domain').val();
                         var expire_month = $('#select_expire_month').val();
                         var recycle = '';
+                        var link = '';
                         var handle = '';
                         break;
                   case '2':
@@ -145,6 +172,7 @@ $(function(){
                         var domain = '';
                         var expire_month = '';
                         var recycle = $('#kindeditor_recycle').val();
+                        var link = $('#select_link_task').val()
                         var handle = '';
                         break;
                   case '4': 
@@ -154,6 +182,7 @@ $(function(){
                         var domain = '';
                         var expire_month = '';
                         var recycle = '';
+                        var link = '';
                         var handle = $('#kindeditor_handle').val(); 
                         break;
             }
@@ -173,6 +202,7 @@ $(function(){
                   'expire_month': expire_month,
                   'recycle': recycle,
                   'handle': handle,
+                  'link': link,
             };
 
             console.log(post_data);

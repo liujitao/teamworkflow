@@ -5,7 +5,7 @@
 <div class="pure-u-1">
 	<table class="pure-table pure-table-horizontal">
 		<thead>
-			<tr>
+			<tr align="center">
 				<th>ID</th>
 				<th>标题</th>
 				<th>创建人</th>
@@ -22,18 +22,18 @@
 		</thead>
 		<tbody>
 		{% for worklog in worklogs %}
-			<tr>
-				<th>{{ worklog.id }}</th>
-				<th><a href="{{ url_for('worklog_detail', id=worklog.id) }}">{{ worklog.title }}</a></th>
-				<th>{{ worklog.created_user }}</th>
-				<th>{{ worklog.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-				<th>{{ worklog.updated_user }}</th>
-				<th>{{ worklog.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-				<th>{{ worklog.updated_count }}</th>
+			<tr align="center">
+				<td>{{ worklog.id }}</td>
+				<td><a href="{{ url_for('worklog_detail', id=worklog.id) }}">{{ worklog.title }}</a></td>
+				<td>{{ worklog.created_user }}</td>
+				<td>{{ worklog.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+				<td>{{ worklog.updated_user }}</td>
+				<td>{{ worklog.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+				<td>{{ worklog.updated_count }}</td>
 				{% if current_user.is_authenticated() and worklog.created_user == current_user.name %} 
-				<th><a href="{{ url_for('worklog_edit', id=worklog.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
+				<td><a href="{{ url_for('worklog_edit', id=worklog.id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
 				{% else %}
-				<th></th>
+				<td></td>
 				{% endif %}
 			</tr>
 		{% endfor %}

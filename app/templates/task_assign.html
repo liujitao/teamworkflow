@@ -6,66 +6,66 @@
       <table class="pure-table pure-table-horizontal">
             <tr><th>任务简述</th><th colspan=7>{{ task.title }}</th></tr>
             <tr>
-                  <th>申请人</th><th align="left">{{ task.name }}</th>
-                  <th>申请团队</th><th align="left">{{ task.team }}</th>
-                  <th>移动电话</th><th align="left">{{ task.mobile }}</th>
-                  <th>电子邮箱</th><th align="left">{{ task.email }}</th>
+                  <th>申请人</th><td>{{ task.name }}</td>
+                  <th>申请团队</th><td>{{ task.team }}</td>
+                  <th>移动电话</th><td>{{ task.mobile }}</td>
+                  <th>电子邮箱</th><td>{{ task.email }}</td>
             </tr>
             <tr>
-                  <th>申请时间</th><th align="left" colspan=3>{{ task.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-                  <th>计划完成时间</th><th align="left" colspan=3>{{ task.planned_time.strftime('%Y-%m-%d') }}</th>
+                  <th>申请时间</th><td colspan=3>{{ task.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                  <th>计划完成时间</th><td colspan=3>{{ task.planned_time.strftime('%Y-%m-%d') }}</td>
             </tr>
             <tr><th>工单类型</th>
-            {% if task.type == 1 %}<th align="left" colspan=7>资源申请</th>{% endif %}
-            {% if task.type == 2 %}<th align="left" colspan=7>资源回收</th>{% endif %}
-            {% if task.type == 3 %}<th align="left" colspan=7>运维巡检</th>{% endif %}
-            {% if task.type == 4 %}<th align="left" colspan=7>故障处理&运维部署</th>{% endif %}
+            {% if task.type == 1 %}<td colspan=7>资源申请</td>{% endif %}
+            {% if task.type == 2 %}<td colspan=7>资源回收</td>{% endif %}
+            {% if task.type == 3 %}<td colspan=7>运维巡检</td>{% endif %}
+            {% if task.type == 4 %}<td colspan=7>故障处理&运维部署</td>{% endif %}
             </tr>
             {% if task.type == 1 %}
             <tr>
                   <th>资源到期时间</th>
-                  <th align="left" colspan=7>{{ task.expire_time.strftime('%Y-%m-%d') }}</th>
+                  <td   align="left" colspan=7>{{ task.expired_time.strftime('%Y-%m-%d') }}</td>
             </tr>
             <tr>
                   <th>硬件</th>
-                  <th colspan=7><textarea name="hardware" id="kindeditor_hardware">{{ task.hardware|safe }}</textarea></th>
+                  <td colspan=7><textarea name="hardware" id="kindeditor_hardware">{{ task.hardware|safe }}</textarea></td>
             </tr>
             <tr>
                   <th>网络访问</th>
-                  <th colspan=7><textarea name="network" id="kindeditor_network">{{ task.network|safe }}</textarea></th>
+                  <td colspan=7><textarea name="network" id="kindeditor_network">{{ task.network|safe }}</textarea></td>
             </tr>
             <tr>
                   <th>存储访问</th>
-                  <th colspan=7><textarea name="storage" id="kindeditor_storage">{{ task.storage|safe }}</textarea></th>
+                  <td colspan=7><textarea name="storage" id="kindeditor_storage">{{ task.storage|safe }}</textarea></td>
             </tr>
             <tr>
                   <th>域名解析</th>
-                  <th colspan=7><textarea name="domain" id="kindeditor_domain">{{ task.storage|safe }}</textarea></th>
+                  <td colspan=7><textarea name="domain" id="kindeditor_domain">{{ task.storage|safe }}</textarea></td>
             </tr>
             {% endif %}
 
             {% if task.type == 2 %}
             <tr>
                   <th>资源回收</th>
-                  <th colspan=7><textarea name="recycle" id="kindeditor_recycle">{{ task.recycle|safe }}</textarea></th>
+                  <td colspan=7><textarea name="recycle" id="kindeditor_recycle">{{ task.recycle|safe }}</textarea></td>
             <tr>
             {% endif %}
 
             {% if task.type == 4 %}
             <tr>
                   <th>故障处理&运维部署</th>
-                  <th colspan=7><textarea name="handle" id="kindeditor_handle">{{ task.handle|safe }}</textarea></th>
+                  <td colspan=7><textarea name="handle" id="kindeditor_handle">{{ task.handle|safe }}</textarea></td>
             <tr>
             {% endif %}
 
             <tr>
                   <th id="text_assign">指派执行人员(不多于5人)</th>
-                  <th colspan=7 align="left">
+                  <td colspan=7 align="left">
                   {% for user in users %}
                         <input type="checkbox" id="checkbox_{{ user.id }}" value="{{ user.id }}"> {{ user.name }}
                         {% if loop.index % 10  == 0 %}<p>{% endif %}
                   {% endfor %}
-                  </th>
+                  </td>
             </tr>
 
       </table>

@@ -25,9 +25,9 @@
 		</thead>
 		<tbody>
 		{% for capture in captures %}
-			<tr>
-				<th>{{ capture.id }}</th>
-				<th>
+			<tr align="left">
+				<td align="center">{{ capture.id }}</td>
+				<td align="center">
 				{% if capture.location_id == 1 %}无锡新区
 				{% elif capture.location_id == 2 %}无锡国脉
 				{% elif capture.location_id == 3 %}北京
@@ -38,8 +38,8 @@
 				{% elif capture.location_id == 8 %}长沙
 				{% elif capture.location_id == 9 %}安徽
 				{% elif capture.location_id == 10 %}山西
-				{% endif %}</th>
-				<th>
+				{% endif %}</td>
+				<td align="center">
                   {% if capture.model_id == 1 %}dell r410
                   {% elif capture.model_id == 1 %}dell r710
                   {% elif capture.model_id == 1 %}老双子星 
@@ -47,18 +47,18 @@
                   {% elif capture.model_id == 1 %}dell r420 
                   {% elif capture.model_id == 1 %}dell r720 
                   {% endif %}
-                </th>
-				<th align="left"><a href="{{ url_for('capture_detail', id=capture.id) }}">{{ capture.hostname }}</a></th>
-				<th align="left">{{ capture.nic1 }}</th>
-				<th align="left">{{ capture.nic2 }}</th>
-				<th align="left">{{ capture.nic3 }}</th>
-				<th>{{ capture.category }}</th>
-				<th align="left">{{ capture.password }}</th>
-				<th>{{ capture.channel }}</th>
+                </td>
+				<td><a href="{{ url_for('capture_detail', id=capture.id) }}">{{ capture.hostname }}</a></td>
+				<td>{{ capture.nic1 }}</td>
+				<td>{{ capture.nic2 }}</td>
+				<td>{{ capture.nic3 }}</td>
+				<td align="center">{{ capture.category }}</td>
+				<td>{{ capture.password }}</td>
+				<td>{{ capture.channel }}</td>
 				{% if current_user.is_authenticated() and current_user.team_id in [1, 3] %} 
-				<th><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
+				<td align="center"><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
 				{% else %}
-				<th></th>
+				<td></td>
 				{% endif %}
 			</tr>
 		{% endfor %}

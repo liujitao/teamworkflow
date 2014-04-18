@@ -1,5 +1,5 @@
 html, body {
-    font-family: 'arial', 'sans-serif';
+    font-family: 'arial', 'sans-serif', 'SimSun';
     font-size: 13px;
     margin: 0;
     padding: 0;
@@ -71,8 +71,8 @@ html, body {
 
 #content {
     width: 99%;
-    padding-left: 0.5%;                                                                                                                        
-    padding-right: 0.5%;
+    padding-left: 5px;                                                                                                                        
+    padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
     color: #333333;

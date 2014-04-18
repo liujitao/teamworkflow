@@ -11,6 +11,7 @@
 				<th>任务类型</th>
 				<th>申请团队</th>
 				<th>申请时间</th>
+				<th>资源过期时间</th>
 				<th>计划完成时间</th>
 				<th>完成时间</th>
 				<th>派单人</th>
@@ -23,61 +24,78 @@
 		</thead>
 		<tbody>
 		{% for task in tasks %}
-			<tr>
-				<th>{{ task.id }}</th>
-				<th align="left"><a href="{{ url_for('task_detail', id=task.id) }}">{{ task.title }}</a></th>
+			<tr align="center">
+				<td>{{ task.id }}</td>
+				<td align="left"><a href="{{ url_for('task_detail', id=task.id) }}">{{ task.title }}</a></td>
 
-				{% if task.type == 1 %}<th>资源申请</th>{% endif %}
-				{% if task.type == 2 %}<th>资源回收</th>{% endif %}
-				{% if task.type == 3 %}<th>运维巡检</th>{% endif %}
-				{% if task.type == 4 %}<th>故障处理&运维部署</th>{% endif %}
+				{% if task.type == 1 %}<td>资源申请</td>{% endif %}
+				{% if task.type == 2 %}<td>资源回收</td>{% endif %}
+				{% if task.type == 3 %}<td>运维巡检</td>{% endif %}
+				{% if task.type == 4 %}<td>故障处理&运维部署</td>{% endif %}
 
-				<th>{{ task.team }}</th>
-				<th>{{ task.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-				<th>{{ task.planned_time.strftime('%Y-%m-%d') }}</th>
-
-				{% if task.executed_time %}<th>{{ task.executed_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-				{% else %}<th></th>
+				<td>{{ task.team }}</td>
+				<td>{{ task.created_time.strftime('%Y-%m-%d %H:%M') }}</td>
+				
+				{% if task.expired_time %}
+					{% if task.status == 4 and task.expire == 1 %}
+					<th style="color: red">{{ task.expired_time.strftime('%Y-%m-%d') }}</th>
+					{% else %}
+					<td>{{ task.expired_time.strftime('%Y-%m-%d') }}</td>
+					{% endif %}
+				{% else %}<td></td>
 				{% endif %}
 
-				{% if task.assigned_user %}<th align="left">{{ task.assigned_user }}</th>
-				{% else %}<th></th>
+				<td>{{ task.planned_time.strftime('%Y-%m-%d') }}</td>
+
+				{% if task.executed_time %}<td>{{ task.executed_time.strftime('%Y-%m-%d %H:%M') }}</td>
+				{% else %}<td></td>
+				{% endif %}
+
+				{% if task.assigned_user %}<td>{{ task.assigned_user }}</td>
+				{% else %}<td></td>
 				{% endif %}		
 
-				{% if task.executed_user %}<th align="left">{{ task.executed_user }}</th>
-				{% else %}<th></th>
+				{% if task.executed_user %}<td>{{ task.executed_user }}</td>
+				{% else %}<td></td>
 				{% endif %}	
 				
-				{% if task.audited_user %}<th>{{ task.audited_user }}</th>
-				{% else %}<th></th>
+				{% if task.audited_user %}<td>{{ task.audited_user }}</td>
+				{% else %}<td></td>
 				{% endif %}
 				
 				{% if task.status == 1 %}
-					<th style="color: gray">正在派单</th>
-					<th>{% if current_user.is_authenticated() %}
+					<th style="color: gray">正在派单</td>
+					<td>{% if current_user.is_authenticated() %}
 						<a href="{{ url_for('task_assign', id=task.id) }}"><i class="fa fa-hand-o-right"></i></a>
 						{% endif %}
-					</th>
+					</td>
 				{% endif %}
 				
 				{% if task.status == 2 %}
-					<th style="color: green">正在执行</th>
-					<th>{% if task.executed_user_id and current_user.id|string in ids[task.id] %}
+					<th style="color: green">正在执行</td>
+					<td>{% if task.executed_user_id and current_user.id|string in ids[task.id] %}
 						<a href="{{ url_for('task_execute', id=task.id) }}"><i class="fa fa-thumbs-o-up"></i></a>
 						{% endif %}
-					</th>					
+					</td>					
 				{% endif %}
 				
 				{% if task.status == 3 %}
-					<th style="color: red">正在审核</th>
-					<th>{% if current_user.team_id == 1 %}
+					<th style="color: red">正在审核</td>
+					<td>{% if current_user.team_id == 1 %}
 						<a href="{{ url_for('task_audit', id=task.id) }}"><i class="fa fa-check-square-o"></i></a>
 						{% endif %}
-					</th>	
+					</td>	
 				{% endif %}
 				
-				{% if task.status == 4 %}<th>任务完成</th><th></th>{% endif %}
-				{% if task.status == 5 %}<th>回收完成</th><th></th>{% endif %}
+				{% if task.status == 4 %}
+					<td>任务完成</td>
+					<td>{% if task.status==4 and task.expire == 1 %}
+						<a href="{{ url_for('task_add', id=task.id) }}"><i class="fa fa-trash-o"></i></a>
+						{% endif %}
+					</td>
+				{% endif %}
+
+				{% if task.status == 5 %}<td>回收完成</td><td></td>{% endif %}
 			</tr>
 		{% endfor %}
 		</tbody>

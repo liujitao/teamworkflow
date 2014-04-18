@@ -4,8 +4,10 @@
 
 <div class="pure-u-2-3">
       <table class="pure-table pure-table-horizontal pure-table-bordered">
-            <tr align="left"><th bgcolor="#CCFFCC" width="10%">ID</th><th width="90%">{{ capture.id }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">IDC位置</th><th>
+            <tr><th width="20%">ID</th><td width="80%">{{ capture.id }}</td></tr>
+            <tr>
+                  <th>IDC位置</th>
+                  <td>
                   {% if capture.location_id == 1 %}无锡新区
                   {% elif capture.location_id == 2 %}无锡国脉>
                   {% elif capture.location_id == 3 %}北京
@@ -17,8 +19,11 @@
                   {% elif capture.location_id == 9 %}安徽
                   {% elif capture.location_id == 10 %}山西
                   {% endif %}
-            </th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">设备型号</th><th>
+                  </td>
+            </tr>
+            <tr>
+                  <th>设备型号</th>
+                  <td>
                   {% if capture.model_id == 1 %}dell r410
                   {% elif capture.model_id == 1 %}dell r710
                   {% elif capture.model_id == 1 %}老双子星 
@@ -26,21 +31,22 @@
                   {% elif capture.model_id == 1 %}dell r420 
                   {% elif capture.model_id == 1 %}dell r720 
                   {% endif %}
-            </th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">IDC SN</th><th>{{ capture.idc_sn }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">主机名</th><th>{{ capture.hostname }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">外网</th><th>{{ capture.nic1 }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">内网</th><th>{{ capture.nic2 }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">内网(组播)</th><th>{{ capture.nic3 }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">用途</th><th>{{ capture.category }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">登录密码</th><th>{{ capture.password }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">采集频道</th><th>{{ capture.channel }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">备注</th><th>{{ capture.content|safe }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">创建人</th><th>{{ capture.created_user }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">创建时间</th><th>{{ capture.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">更新人</th><th>{{ capture.updated_user }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">更新时间</th><th>{{ capture.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</th></tr>
-            <tr align="left"><th bgcolor="#CCFFCC">更新次数</th><th>{{ capture.updated_count }}</th></tr>
+                  </td>
+            </tr>
+            <tr><th>IDC SN</th><td>{{ capture.idc_sn }}</td></tr>
+            <tr><th>主机名</th><td>{{ capture.hostname }}</td></tr>
+            <tr><th>外网</th><td>{{ capture.nic1 }}</td></tr>
+            <tr><th>内网</th><td>{{ capture.nic2 }}</td></tr>
+            <tr><th>内网(组播)</th><td>{{ capture.nic3 }}</td></tr>
+            <tr><th>用途</th><td>{{ capture.category }}</td></tr>
+            <tr><th>登录密码</th><td>{{ capture.password }}</td></tr>
+            <tr><th>采集频道</th><td>{{ capture.channel }}</td></tr>
+            <tr><th>备注</th><td>{{ capture.content|safe }}</td></tr>
+            <tr><th>创建人</th><td>{{ capture.created_user }}</td></tr>
+            <tr><th>创建时间</th><td>{{ capture.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+            <tr><th>更新人</th><td>{{ capture.updated_user }}</td></tr>
+            <tr><th>更新时间</th><td>{{ capture.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+            <tr><th>更新次数</th><td>{{ capture.updated_count }}</td></tr>
       </table>
       <p>
       <a class="pure-button" href="{{ url_for('capture_list') }}">返回</a>

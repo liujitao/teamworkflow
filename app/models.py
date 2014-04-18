@@ -67,7 +67,7 @@ class Wiki(db.Model):
 	id = db.Column(db.Integer, primary_key=True, index=True)
 	title = db.Column(db.String(100))
 	content = db.Column(db.Text)
-	category_id = db.Column(db.Integer)
+	category_id = db.Column(db.Integer, default=1)
 	created_user = db.Column(db.String(40), default='admin')
 	created_time = db.Column(db.DateTime, default=datetime.datetime.now())
 	updated_user = db.Column(db.String(40), default='admin')
@@ -128,7 +128,7 @@ class Task(db.Model):
 	network = db.Column(db.Text) # 访问互联网, 开通外网访问, 内网访问权限
 	storage = db.Column(db.Text) # 挂载公共存储数据 
 	domain = db.Column(db.Text) # 内网域名, 外网域名
-	expire_time = db.Column(db.DateTime) # 月转化为天
+	expired_time = db.Column(db.DateTime) # 月转化为天
 	recycle = db.Column(db.Text) # 回收资源
 	handle = db.Column(db.Text) # 故障处理&运维部署
 	created_user = db.Column(db.String(40), default='admin') # 建立人员
@@ -143,4 +143,6 @@ class Task(db.Model):
 	audit = db.Column(db.Text) # 工单审核结果
 	audited_user = db.Column(db.String(40)) # 审核人
 	audited_time = db.Column(db.DateTime) # 审核完成时间
-	status = db.Column(db.Integer) # 工单状态, 1已生成(未指派) 2已指派(未执行) 3已执行(未审核) 4已审核 5已回收(回收工单)
+	expire = db.Column(db.Integer, default=0) # 过期状态, 0未过期, 1过期
+	link = db.Column(db.Integer, default=0) # 资源回收, 关联资源申请id 
+	status = db.Column(db.Integer) # 工单状态, 1已生成(未指派) 2已指派(未执行) 3已执行(未审核) 4已审核 5已回收

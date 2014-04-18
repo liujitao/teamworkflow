@@ -21,7 +21,15 @@ def before_request():
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	check_task_expire() # 检查过期的资源申请,提示回收
+	assign_count = Task.query.filter(Task.status==1).count()
+	execute_count = Task.query.filter(Task.status==2).count()
+	aduit_count = Task.query.filter(Task.status==3).count()
+	recycle_count = Task.query.filter(Task.type==1, Task.expire==1).count()
+
+	return render_template('index.html', \
+		assign_count=assign_count, execute_count=execute_count, \
+		aduit_count=aduit_count, recycle_count=recycle_count)
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
@@ -250,6 +258,9 @@ def capture_edit(id):
 	form.location_id.choices = [(1, u'无锡新区'), (2, u'无锡国际'), (3, u'北京'), (4, u'北京备份'), \
 		(5, u'上海'), (6, u'上海备份'), (7, u'广州'), (8, u'长沙'), (9, u'安徽'), (10, u'山西')]
 	form.location_id.choices.insert(0, (0, u'- 指定位置 -'))
+	form.model_id.choices = [(1, u'dell r410'), (2, u'dell r710'), (3, u'老双子星'), (4, u'超微双子星'), \
+		(5, u'dell r420'), (6, u'dell r720')]
+	form.model_id.choices.insert(0, (0, u'- 指定型号 -'))
 
 	if form.validate_on_submit():
 		form.populate_obj(capture)
@@ -452,11 +463,30 @@ def schedule_edit(year, month):
 	return render_template('schedule_edit.html', year=year, month=month, count=len(last_month)+len(this_month), \
 		last_month=last_month, this_month=this_month, staffs=schedules)
 
+
+def check_task_expire():
+	tasks = Task.query.filter(Task.type==1, Task.status==4).all()
+	
+	for task in tasks:
+		if rrule(DAILY, dtstart=task.expired_time, until=datetime.datetime.now()).count() != 0:
+			task.expire = 1
+	
+	db.session.commit()
+
 @app.route('/task/', methods=['GET'])
-@app.route('/task/<int:page>/', methods=['GET', 'POST'])
-def task_list(page=1):
+@app.route('/task/status/<int:status>/', methods=['GET'])
+@app.route('/task/page/<int:page>/', methods=['GET', 'POST'])
+def task_list(page=1, status=None):
 	record_per_page = app.config['RECORD_PER_PAGE']
-	pagination = Task.query.order_by(Task.id.desc()).paginate(page, record_per_page, False)
+	if not status:
+		pagination = Task.query.order_by(Task.id.desc()).paginate(page, record_per_page, False)
+	elif status==4:
+		pagination = Task.query.filter(Task.type==1, Task.expire==1) \
+			.order_by(Task.id.desc()).paginate(page, record_per_page, False)
+	else:
+		pagination = Task.query.filter(Task.status==status) \
+			.order_by(Task.id.desc()).paginate(page, record_per_page, False)
+	
 	tasks = pagination.items
 
 	ids = {}
@@ -468,8 +498,13 @@ def task_list(page=1):
 		tasks=tasks, ids=ids)
 
 @app.route('/task/add', methods=['GET', 'POST'])
-def task_add():
-	return render_template('task_edit.html')
+@app.route('/task/add/<int:id>/', methods=['GET', 'POST'])
+def task_add(id=None):
+	tasks = {}
+	for task in Task.query.filter(Task.type==1, Task.status==4).order_by(Task.id.desc()).all():
+		tasks[task.id] = {'title': task.title, 'expired_time': task.expired_time}
+
+	return render_template('task_edit.html', id=id, tasks=tasks)
 
 @app.route('/task/assign/<int:id>/', methods=['GET', 'POST'])
 @login_required
@@ -518,9 +553,10 @@ def task_create_commit():
 		task.storage = request.json['storage']
 		task.domain = request.json['domain']
 		expire_month = int(request.json['expire_month'])
-		task.expire_time =  datetime.datetime.now() + datetime.timedelta(days=expire_month*30)
+		task.expired_time =  datetime.datetime.now() + datetime.timedelta(days=expire_month*30)
 	elif type == 2:
 		task.recycle = request.json['recycle']
+		task.link = request.json['link']
 	elif type == 4:
 		task.handle = request.json['handle']	
 
@@ -592,15 +628,14 @@ def task_audit_commit():
 	#print request.json['id'], request.json['audit']
 	task = Task.query.filter(Task.id==request.json['id']).first()
 	task.audit = request.json['audit']
-	type = int(request.json['type'])
 		
 	task.audited_user = current_user.name
 	task.audited_time = datetime.datetime.now()
+	task.status = 4 
 
-	if type == 2:
-		task.status = 5 # 回收资源类型工单，标志位5
-	else:
-		task.status = 4 # 其他类型工单，标志位4
+	if task.link != 0:
+		apply = Task.query.filter(Task.id==task.link).first()
+		apply.status = 5
 
 	db.session.commit()
 	

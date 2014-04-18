@@ -5,7 +5,7 @@
 <div class="pure-u-1">
 	<table class="pure-table pure-table-horizontal">
 		<thead>
-			<tr>
+			<tr align="center">
 				<th>ID</th>
 				<th>分类</th>
 				<th>标题</th>
@@ -23,26 +23,26 @@
 		</thead>
 		<tbody>
 		{% for wiki in wikis %}
-			<tr>
-				<th>{{ wiki.id }}</th>
-				<th>
+			<tr align="center">
+				<td>{{ wiki.id }}</td>
+				<td>
 				{% if wiki.category_id == 1 %}采集&直播流
 				{% elif wiki.category_id == 2 %}监控系统
 				{% elif wiki.category_id == 3 %}北美SunTV
 				{% elif wiki.category_id == 4 %}iSearch
 				{% elif wiki.category_id == 5 %}其他
 				{% endif %}
-				</th>
-				<th><a href="{{ url_for('wiki_detail', id=wiki.id) }}">{{ wiki.title }}</a></th>
-				<th>{{ wiki.created_user }}</th>
-				<th>{{ wiki.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-				<th>{{ wiki.updated_user }}</th>
-				<th>{{ wiki.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</th>
-				<th>{{ wiki.updated_count }}</th>
+				</td>
+				<td  align="left"><a href="{{ url_for('wiki_detail', id=wiki.id) }}">{{ wiki.title }}</a></td>
+				<td>{{ wiki.created_user }}</td>
+				<td>{{ wiki.created_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+				<td>{{ wiki.updated_user }}</td>
+				<td>{{ wiki.updated_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+				<td>{{ wiki.updated_count }}</td>
 				{% if current_user.is_authenticated() %}
-				<th><a href="{{ url_for('wiki_edit', id=wiki.id) }}"><i class="fa fa-pencil-square-o"></i></a></th>
+				<td><a href="{{ url_for('wiki_edit', id=wiki.id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
 				{% else %}
-				<th></th>
+				<td></td>
 				{% endif %}
 			</tr>
 		{% endfor %}

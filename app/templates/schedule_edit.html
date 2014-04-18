@@ -32,8 +32,8 @@
             </tr>
             {% for staff in staffs %}
             <tr id="tr_{{ loop.index }}">
-            {% if staff.type == 2 %}<th align="left">{{ staff.name }}(替)</th>
-            {% else %}<th align="left">{{ staff.name }}</th>
+            {% if staff.type == 2 %}<td>{{ staff.name }}(替)</td>
+            {% else %}<td>{{ staff.name }}</td>
             {% endif %}
             
             {% for day in staff.list.split(',') %}

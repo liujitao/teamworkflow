@@ -22,15 +22,19 @@
       <tr align="left"><th colspan=4 id="p_staff_desc">轮班人员 (最少4名)</th></tr>
       {% for user in users %}
       <tr>
-            <th><input type="checkbox" id="checkbox_p_staff_{{ user.id }}" value="{{ user.name }}"></th>
-            <th>{{ user.name }}</th>
-            <th><select id="select_date_{{ user.id }}"><option>本月值班开始时间</option></select></th>
-            <th>早班</th>
+            <td><input type="checkbox" id="checkbox_p_staff_{{ user.id }}" value="{{ user.name }}"></td>
+            <td>{{ user.name }}</td>
+            <td><select id="select_date_{{ user.id }}"><option>本月值班开始时间</option></select></td>
+            <td>早班</td>
       </tr>
       {% endfor %}
       <tr align="left"><th colspan=4 id="t_staff_desc">替班人员 (最少1名)</th></tr>
       {% for user in users %}
-      <tr><th><input type="checkbox" id="checkbox_t_staff_{{ user.id }}" value="{{ user.name }}"></th><th>{{ user.name }}</th><th colspan=2></th></tr>
+      <tr>
+            <td><input type="checkbox" id="checkbox_t_staff_{{ user.id }}" value="{{ user.name }}"></td>
+            <td>{{ user.name }}</td>
+            <td colspan=2></td>
+      </tr>
       {% endfor %}
 </table>
 <p>
@@ -76,7 +80,7 @@ $('input[id^=checkbox_p_staff]').change(function(){
 $('input[id^=checkbox_t_staff]').change(function(){
       var id = $(this).attr('id').split('_')[3];
       if ($(this).attr('checked')) {
-            $('#checkbox_t_staff_' + id).RemoveAttr('checked');
+            $('#checkbox_t_staff_' + id).removeAttr('checked');
       } else {
             $('#checkbox_t_staff_' + id).attr('checked', 'checked'); 
       }

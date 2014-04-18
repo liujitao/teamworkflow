@@ -1,7 +1,59 @@
 {% extends 'layout.html' %}
 {% block content %}
+<div class="pure-u-1-6">
+<table class="pure-table pure-table-horizontal" width="100%">
+    <tbody align="center">
+    <tr><th colspan=2>工单处理</th></tr>
+    <tr>
+    	<td width="50%">等待派单</td>
+        {% if assign_count > 0 %}
+    	<td><a href="{{ url_for('task_list', status=1) }}">{{ assign_count }}</a></td>
+        {% else %}<td>{{ assign_count }}</td>
+        {% endif %}
+    </tr>
+    <tr>
+    	<td>等待执行</td>
+        {% if execute_count > 0 %}
+    	<td><a href="{{ url_for('task_list', status=2) }}">{{ execute_count }}</a></td>
+        {% else %}<td>{{ execute_count }}</td>
+        {% endif %}
+    </tr>
+    <tr>
+    	<td>等待审核</td>
+        {% if aduit_count > 0 %}
+    	<td><a href="{{ url_for('task_list', status=3) }}">{{ aduit_count }}</a></td>
+        {% else %}<td>{{ aduit_count }}</td>
+        {% endif %}
+    </tr>
+    <tr>
+        <td>资源过期</td>
+        {% if recycle_count > 0 %}
+        <td><a href="{{ url_for('task_list', status=4) }}">{{ recycle_count }}</a></td>
+        {% else %}<td>{{ recycle_count }}</td>
+        {% endif %}
+    </tr>
+    </tbody>
+</table>
+</div>
 
-<div class="pure-u-1">
+<div class="pure-u-1-6" style="padding-left:5px">
+<table class="pure-table pure-table-horizontal" width="100%" align="center">
+    <tbody align="center">
+    <tr><th colspan=2>采集直播</th></tr>
+    <tr>
+        <td>采集服务器</td>
+        <td><a href="{{ url_for('capture_list') }}">0</a></td>
+    </tr>
+    <tr>
+        <td>直播服务器</td>
+        <td><a href="{{ url_for('capture_list') }}">0</a></td>
+    </tr>
+    <tr>
+        <td>信号设备</td>
+        <td><a href="{{ url_for('capture_list') }}">0</a></td>
+    </tr>
+    </tbody>
+</table>
 </div>
 
 {% endblock %}
