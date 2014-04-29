@@ -45,3 +45,10 @@ class CaptureEditForm(Form):
 	channel = TextField(u'采集频道')
 	capture_method = TextField(u'采集方式')
 	content = TextAreaField(u'备注')
+
+class YumSiteEditForm(Form):
+	repository_id = SelectField(u'资源类型', coerce=int)
+	country = TextField(u'国家')
+	name = TextField(u'组织名称')
+	http = TextField(u'Http')
+	rsync = TextField(u'Rsync')

@@ -34,18 +34,12 @@
             </ul>
             {% endif %}
         </li>
+
         {% if current_user.is_authenticated() %}
         <li><a href="{{ url_for('task_list') }}">运维工单</a></li>
-        {% else %}
-        <li><a href="{{ url_for('task_list') }}">运维工单</a>
-            <ul>
-                <li><a href="{{ url_for('task_add') }}">申请工单</a></li>
-            </ul>
-        </li>
-        {% endif %}
-        {% if current_user.is_authenticated() %}
         <li><a href="{{ url_for('user_list') }}">团队成员</a></li>
         <li><a href="{{ url_for('capture_list') }}">采集&直播流</a></li>
+
         <li><a href="{{ url_for('wiki_list') }}">知识库</a></li>
  
         <li><a><i class="fa fa-user"></i> {{ current_user.name }}</a>
@@ -55,6 +49,11 @@
             </ul>
         </li>
         {% else %}
+        <li><a href="{{ url_for('task_list') }}">运维工单</a>
+            <ul>
+                <li><a href="{{ url_for('task_add') }}">申请工单</a></li>
+            </ul>
+        </li>
         <li><a href="{{ url_for('login') }}">登录</a>
         {% endif %}
     </ul>

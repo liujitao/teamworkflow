@@ -7,8 +7,8 @@ from flask import render_template, redirect, url_for, request, jsonify, session,
 from flask.ext.sqlalchemy import Pagination
 from flask.ext.login import login_user, logout_user, current_user, login_required
 
-from models import WorkLog, Wiki, User, Capture, Schedule, Task
-from forms import WorkLogEditForm, UserEditForm, WikiEditForm, CaptureEditForm, LoginForm
+from models import WorkLog, Wiki, User, Capture, Schedule, Task #, YumSite
+from forms import WorkLogEditForm, UserEditForm, WikiEditForm, CaptureEditForm, LoginForm #, YumSiteEditForm
 from app import app, db, login_manager
 
 @login_manager.user_loader
@@ -18,6 +18,15 @@ def load_user(id):
 @app.before_request
 def before_request():
     g.user = current_user
+
+@app.errorhandler(401)
+def page_unauthorized(error):
+	return render_template('page_unauthorized.html'), 401
+
+@app.errorhandler(404)
+def page_not_found(error):
+	return render_template('page_not_found.html'), 404
+
 
 @app.route('/')
 def index():
@@ -37,7 +46,7 @@ def login():
 
 	if form.validate_on_submit():
 		user = User.query.filter_by(email=request.form['email']).first()
-		if user and user.check_password(request.form['password']):
+		if user and user.is_active and user.check_password(request.form['password']):
 			login_user(user)
 			return redirect(url_for('index'))
 
@@ -99,6 +108,7 @@ def worklog_detail(id):
 	return render_template('worklog_detail.html', worklog=worklog)
 
 @app.route('/user/', methods=['GET'])
+@login_required
 def user_list():
 	users = User.query.filter(User.active==1).order_by(User.id).all()
 	return render_template('user_list.html', users=users)
@@ -165,6 +175,7 @@ def file_upload():
 
 @app.route('/wiki/', methods=['GET'])
 @app.route('/wiki/<int:page>/', methods=['GET', 'POST'])
+@login_required
 def wiki_list(page=1):
 	record_per_page = app.config['RECORD_PER_PAGE']
 	pagination = Wiki.query.order_by(Wiki.category_id, Wiki.id.desc()).paginate(page, record_per_page, False)
@@ -211,6 +222,7 @@ def wiki_edit(id):
 	return render_template('wiki_edit.html', form=form)
 
 @app.route('/wiki/detail/<int:id>/', methods=['GET'])
+@login_required
 def wiki_detail(id):
 	wiki = Wiki.query.filter(Wiki.id==id).first()
 	return render_template('wiki_detail.html', wiki=wiki)
@@ -439,7 +451,8 @@ def schedule_list():
 @app.route('/schedule/add/', methods=['GET', 'POST'])
 @login_required
 def schedule_add():
-	users = User.query.filter(User.team_id==2, User.active==1).order_by(User.id).all()
+	#users = User.query.filter(User.team_id==2, User.active==1).order_by(User.id).all()
+	users = User.query.filter(User.active==1).order_by(User.id).all()
 	return render_template('schedule_add.html', users=users)
 
 @app.route('/schedule/edit/<int:year>/<int:month>/', methods=['GET', 'POST'])
@@ -640,3 +653,55 @@ def task_audit_commit():
 	db.session.commit()
 	
 	return jsonify(json=True)
+
+	'''
+@app.route('/yum/site/', methods=['GET'])
+def yum_site_list():
+	sites = YumSite.query.order_by(YumSite.id).all()
+	return render_template('yum_site_list.html', sites=sites)
+
+@app.route('/yum/site/add/', methods=['GET', 'POST'])
+def yum_site_add():
+	form = YumSiteEditForm(request.form)
+	form.repository_id.choices = [(1, u'centos'), (2, u'epel'), (3, u'repoforge')]
+	form.repository_id.choices.insert(0, (0, u'- 指定资源 -'))
+
+	if form.validate_on_submit():
+		site = YumSite()
+		site.repository_id = form.repository_id.data
+		site.country = form.country.data
+		site.name = form.name.data
+		site.http = form.http.data
+		site.rsync = form.rsync.data
+		site.updated_user = current_user.name
+		site.updated_time = datetime.datetime.now()
+		db.session.add(site)
+		db.session.commit()
+		return redirect(url_for('yum_site_list'))
+
+	return render_template('yum_site_edit.html', form=form)
+
+@app.route('/yum/site/edit/<int:id>/', methods=['GET', 'POST'])
+def yum_site_edit(id):
+	site = YumSite.query.filter(YumSite.id==id).first()
+	form = YumSiteEditForm(request.form, site)
+	form.repository_id.choices = [(1, u'centos'), (2, u'epel'), (3, u'repoforge')]
+	form.repository_id.choices.insert(0, (0, u'- 指定资源 -'))
+
+	if form.validate_on_submit():
+		site.repository_id = form.repository_id.data
+		site.country = form.country.data
+		site.name = form.name.data
+		site.http = form.http.data
+		site.rsync = form.rsync.data
+		site.updated_user = current_user.name
+		site.updated_time = datetime.datetime.now()
+		db.session.commit()
+		return redirect(url_for('yum_site_list'))
+
+	return render_template('yum_site_edit.html', form=form)
+
+@app.route('/yum/sync/', methods=['GET'])
+def yum_sync_list():
+	return render_template('yum_sync_list.html')
+	'''

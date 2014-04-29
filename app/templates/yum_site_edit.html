@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% from 'macros.html' import render_field %}
+
+<div class="pure-u-1">
+	<form class="pure-form pure-form-stacked" method="post">
+	{{ form.csrf_token }}
+	 	<fieldset>
+            <h4>{{ form.repository_id.label }}</h4>
+            {{ render_field(form.repository_id) }}
+            <h4>{{ form.country.label }}</h4>
+            {{ render_field(form.country, class="pure-input-1-3", placeholder="格式: 中国") }}
+            <h4>{{ form.name.label }}</h4>
+            {{ render_field(form.name, class="pure-input-1-3") }}
+            <h4>{{ form.http.label }}</h4>
+            {{ render_field(form.http, class="pure-input-1-3") }}
+            <h4>{{ form.rsync.label }}</h4>
+            {{ render_field(form.rsync, class="pure-input-1-3") }}
+            <p>	
+            <button type="submit" class="pure-button pure-button-primary">提交</button>
+            <a class="pure-button" href="{{ url_for('yum_site_list') }}">返回</a>
+        </fieldset>
+	</form>
+</div>
+
+{% endblock %}

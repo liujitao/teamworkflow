@@ -69,6 +69,22 @@ html, body {
     font-weight: bold;
 }
 
+.button-xsmall {
+    font-size: 70%;
+}
+
+.button-small {
+    font-size: 85%;
+}
+
+.button-large {
+    font-size: 110%;
+}
+
+.button-xlarge {
+    font-size: 125%;
+}
+
 #content {
     width: 99%;
     padding-left: 5px;                                                                                                                        

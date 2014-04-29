@@ -39,7 +39,10 @@ class User(db.Model):
 		return True
 
 	def is_active(self):
-		return True
+		if self.active == 1:
+			return True
+		else:
+			return False
 
 	def is_anonymous(self):
 		return False
@@ -146,3 +149,15 @@ class Task(db.Model):
 	expire = db.Column(db.Integer, default=0) # 过期状态, 0未过期, 1过期
 	link = db.Column(db.Integer, default=0) # 资源回收, 关联资源申请id 
 	status = db.Column(db.Integer) # 工单状态, 1已生成(未指派) 2已指派(未执行) 3已执行(未审核) 4已审核 5已回收
+
+class YumSite(db.Model):
+	__tablename__ = 'yum_site'
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	repository_id = db.Column(db.Integer) # 1 centos 2 epel 3 repoforge
+	country = db.Column(db.String(40))
+	name = db.Column(db.String(40), nullable=False)
+	http = db.Column(db.String(40))
+	rsync = db.Column(db.String(40), nullable=False)
+	speed = db.Column(db.String(40), default='0')
+	updated_user = db.Column(db.String(40), default='admin')
+	updated_time = db.Column(db.DateTime, default=datetime.datetime.now())
