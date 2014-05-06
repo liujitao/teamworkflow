@@ -358,7 +358,6 @@ def schedule_init_commit():
 
 		#保存数据库
 		schedule = Schedule()
-		schedule.user_id = id
 		schedule.name = name	
 		schedule.year = year
 		schedule.month = month
@@ -392,10 +391,10 @@ def schedule_edit_commit():
 		...
 	]
 	'''
-	
+
 	for staff in request.json['staff']:
 		schedule = Schedule.query.filter(Schedule.year==request.json['year'], \
-			Schedule.month==request.json['month'], Schedule.user_id==int(staff['id'])).first()
+			Schedule.month==request.json['month'], Schedule.id==int(staff['id'])).first()
 
 		schedule.list = staff['list']
 
@@ -413,8 +412,9 @@ def schedule_edit_commit():
  		schedule.updated_user = current_user.name
  		schedule.updated_time = datetime.datetime.now()
  		schedule.updated_count += 1
+		
 		db.session.commit()
-
+		
 	return jsonify(json=True)
 
 @app.route('/schedule/', methods=['GET'])
@@ -442,7 +442,7 @@ def schedule_list(page=1):
 
 	for i in date:		
 		year, month = int(i.split('-')[0]), int(i.split('-')[1]) 
-		schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month)\
+		schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month) \
 			.order_by(Schedule.type).all()
 
 		if schedules:
@@ -486,7 +486,8 @@ def schedule_add():
 @app.route('/schedule/edit/<int:year>/<int:month>/', methods=['GET', 'POST'])
 @login_required
 def schedule_edit(year, month):
-	schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month).all()
+	schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month) \
+		.order_by(Schedule.type).all()
 	
 	if month == 1:
 		last_month_days = rrule(DAILY, dtstart=datetime.date(year-1, 12, 26), \

@@ -101,13 +101,12 @@ class Capture(db.Model):
 class Schedule(db.Model):
 	__tablename__ = 'schedule'
 	id = db.Column(db.Integer, primary_key=True, index=True)
-	user_id = db.Column(db.Integer) # 用户id
 	name = db.Column(db.String(40))
 	year = db.Column(db.Integer)
 	month = db.Column(db.Integer)
 	days = db.Column(db.Integer)
 	type = db.Column(db.Integer) # 1轮班 2替班 3正常班
-	list = db.Column(db.String(100)) # 每天值班标识, 0正常休, 1早班, 2晚班, 3全班(早+晚), 25调休
+	list = db.Column(db.String(100)) # 每天值班标识, 0正常休, 1早班, 2晚班, 3全班(早+晚), 4换, 25调休
 	morning = db.Column(db.Integer) # 早班数
 	evening = db.Column(db.Integer) # 晚班数
 	rest = db.Column(db.Integer) # 调休数

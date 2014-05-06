@@ -38,10 +38,10 @@
 
             {%- for staff in staffs -%}
             {%- if staff.type != 3 -%}
-            <tr id="tr_p_{{ loop.index }}">
+            <tr id="tr_p_{{ staff.id }}">
                 <td>{{ staff.name }}</td>
                 {%- for day in staff.list.split(',') -%}
-                <td id="td_p_{{ loop.index }}">{{ day }}</td>
+                <td id="td_p_{{ staff.id }}">{{ day }}</td>
                 {%- endfor -%}
                 <td>{{ staff.name }}</td>
             </tr>
@@ -82,10 +82,10 @@
 
             {%- for staff in staffs -%}
             {%- if staff.type == 3 -%}
-            <tr id="tr_n_{{ loop.index }}">
+            <tr id="tr_n_{{ staff.id }}">
                 <td>{{ staff.name }}</td>                      
                 {%- for day in staff.list.split(',') -%}
-                <td id="td_n_{{ loop.index }}">{{ day }}</td>
+                <td id="td_n_{{ staff.id }}">{{ day }}</td>
                 {%- endfor -%}
                 <td>{{ staff.name }}</td>
             </tr>
@@ -100,7 +100,7 @@
 
 <script type="text/javascript">
 $(function(){
-var select_p = '<select><option value="0"></option><option value="1">早</option><option value="2">晚</option><option value="3">全</option><option value="25">休</option></select>';
+var select_p = '<select><option value="0"></option><option value="1">早</option><option value="2">晚</option><option value="3">全</option><option value="4">换</option><option value="25">休</option></select>';
 
 var select_n = '<select><option value="0"></option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="25">休</option></select>';
 
