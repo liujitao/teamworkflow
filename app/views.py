@@ -309,66 +309,73 @@ def get_first_4days():
 @app.route('/json/schedule/init_commit/', methods=['GET', 'POST'])
 @login_required
 def schedule_init_commit():
-	#print request.json['year'], request.json['month'], request.json['staff']
-	year = request.json['year']
-	month = request.json['month']
-	yesterday = datetime.date(int(year), int(month), 1) - datetime.timedelta(days=1)
-	last_month = yesterday.month
-	start = datetime.date(int(year), int(last_month), 26)
-	end = datetime.date(int(year), int(month), 25)
-	days = rrule(DAILY, dtstart=start, until=end).count()	 # year/last_month/26 - year/month/25
+	# print request.json['year'], request.json['month'], request.json['staff']
+	year = int(request.json['year'])
+	month = int(request.json['month'])
+
+	if month == 1:
+		start = datetime.date(year-1, 12, 26)
+	else:
+		start = datetime.date(year, month-1, 26)
 	
+	days = rrule(DAILY, dtstart=start, until=datetime.date(year, month, 25)).count()
+
 	'''
-	staff [u'1,张三,2-26,1', u'2,李四,2-26,1', u'3,王五,2-27,1', u'4,候六,2-27,1',  u'5,孟七,,2']
+	staff [u'1,张三,12-26,1', u'2,李四,12-27,1', u'3,王五,12-28,1', u'4,候六,12-29,1',  u'5,孟七,,2']
 	'''
 
 	# 排班处理
 	separator = ','
 	for staff in request.json['staff']:
-		schedule = Schedule()
-		id, name, start_date, type = staff.split(',')
 		day = [0 for i in xrange(1, days+1)] # 数组初值0，代表全月休息
+
+		id, name, start_date, type = staff.split(',')
 
 		if int(type) == 1:
 			start_date_m, start_date_d = start_date.split('-')
-			start_date_id = rrule(DAILY, dtstart=start, \
-				until=datetime.date(int(year), int(start_date_m), int(start_date_d))).count()
+
+			if month == 1:
+				start_day_id = rrule(DAILY, dtstart=start, \
+					until=datetime.date(year-1, int(start_date_m), int(start_date_d))).count()
+			else:
+				start_day_id = rrule(DAILY, dtstart=start, \
+					until=datetime.date(year, int(start_date_m), int(start_date_d))).count()
 		
 			# 排班算法,4人2班,对4求余
-			if start_date_id == 1:
+			if start_day_id == 1:
 				for i in xrange(1, days+1):
 					day[i-1] = (i % 4) if (i % 4) in [1, 2] else 0
-			elif start_date_id == 2:
+			elif start_day_id == 2:
 				for i in xrange(1, days+1):
 					day[i-1] = ((i - 1) % 4) if ((i - 1) % 4) in [1, 2] else 0
-			elif start_date_id == 3:
+			elif start_day_id == 3:
 				for i in xrange(2, days+1):
 					day[i-1] = ((i - 2) % 4) if ((i - 2) % 4) in [1, 2] else 0
-			elif start_date_id == 4:
+			elif start_day_id == 4:
 				day[0] = 2
 				for i in xrange(3, days+1):
 					day[i-1] = ((i - 3) % 4) if ((i - 3) % 4) in [1, 2] else 0
 
 		#保存数据库
-		schedule.order_id = id
+		schedule = Schedule()
+		schedule.user_id = id
 		schedule.name = name	
 		schedule.year = year
 		schedule.month = month
 		schedule.days = days
 		schedule.type = type
 		schedule.list = separator.join([str(i) for i in day])
-		schedule.morning =  0 if len([i for i in day if i == 1]) == 0 else len([i for i in day if i == 1]) - 1
+		schedule.morning =  0 if len([i for i in day if i == 1]) == 0 else len([i for i in day if i == 1])
  		schedule.evening = len([i for i in day if i == 2])
- 		schedule.morning_r = 0 if len([i for i in day if i == 1]) == 0 else len([i for i in day if i == 1])
- 		schedule.evening_r = len([i for i in day if i == 2])
-		schedule.created_user = current_user.name
+ 		schedule.rest = 0
+ 		schedule.overtime = 0
+		
 		schedule.updated_user = current_user.name
-		schedule.created_time = datetime.datetime.now()
 		schedule.updated_time = datetime.datetime.now()
 		schedule.updated_count = 0
 
 		db.session.add(schedule)
-	
+		
 	db.session.commit()
 
 	return jsonify(json=True)
@@ -379,21 +386,30 @@ def schedule_edit_commit():
 	#print request.json['year'], request.json['month'], request.json['staff']
 	'''
 	staff [
-		{'id': 1, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0'},
-		{'id': 2, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0'},
-		{'id': 3, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0'},
+		{'id': 1, 'type': 1, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0'},
+		{'id': 2, 'type': 1, 'list': '1,2,0,0,1,2,0,0,1,2,0,0,1,2,0,0,25,2,0,0'},
+		{'id': 3, 'type': 2, 'list': '1,0,0,0,0,25,0,3,0,0,0,0,0,0,0,13,0'},
 		...
 	]
 	'''
-
+	
 	for staff in request.json['staff']:
 		schedule = Schedule.query.filter(Schedule.year==request.json['year'], \
-			Schedule.month==request.json['month'], Schedule.order_id==int(staff['id'])).first()
+			Schedule.month==request.json['month'], Schedule.user_id==int(staff['id'])).first()
 
 		schedule.list = staff['list']
-		schedule.morning_r = 0 if len([i for i in staff['list'].split(',') if i in ['1', '5']]) == 0 \
-			else len([i for i in staff['list'].split(',') if i in ['1', '5']])
- 		schedule.evening_r = len([i for i in staff['list'].split(',') if i in ['2', '5']])
+
+		if staff['type'] == 1:
+			schedule.morning = 0 if len([i for i in staff['list'].split(',') if i in ['1', '3']]) == 0 \
+				else len([i for i in staff['list'].split(',') if i in ['1', '3']])
+ 			schedule.evening = len([i for i in staff['list'].split(',') if i in ['2', '3']])
+
+ 		if staff['type'] == 2:
+ 			overtime = [int(i) for i in staff['list'].split(',') if i != '25']
+ 			schedule.overtime = sum(overtime)
+
+ 		schedule.rest = len([i for i in staff['list'].split(',') if i in ['25']])
+
  		schedule.updated_user = current_user.name
  		schedule.updated_time = datetime.datetime.now()
  		schedule.updated_count += 1
@@ -401,8 +417,14 @@ def schedule_edit_commit():
 
 	return jsonify(json=True)
 
-@app.route('/schedule/', methods=['GET', 'POST'])
-def schedule_list():
+@app.route('/schedule/', methods=['GET'])
+#@app.route('/schedule/<int:page>/', methods=['GET', 'POST'])
+	#record_per_page = app.config['RECORD_PER_PAGE']
+	#pagination = WorkLog.query.order_by(WorkLog.id.desc()).paginate(page, record_per_page, False)
+	#worklogs = pagination.items
+	#return render_template('worklog_list.html', pagination=pagination, record_per_page=record_per_page, \
+	#	worklogs=worklogs)
+def schedule_list(page=1):
 	date = [
 		'2018-12', '2018-11', '2018-10', '2018-9', '2018-8', '2018-7', \
 		'2018-6', '2018-5', '2018-4', '2018-3', '2018-2', '2018-1', \
@@ -420,12 +442,18 @@ def schedule_list():
 
 	for i in date:		
 		year, month = int(i.split('-')[0]), int(i.split('-')[1]) 
-		schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month).all()
+		schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month)\
+			.order_by(Schedule.type).all()
 
 		if schedules:
 
-			last_month_days = rrule(DAILY, dtstart=datetime.date(year, month-1, 26), \
-				until=datetime.date(year, month, 1) - datetime.timedelta(days=1))
+			if month == 1:
+				last_month_days = rrule(DAILY, dtstart=datetime.date(year-1, 12, 26), \
+					until=datetime.date(year, month, 1) - datetime.timedelta(days=1))
+			else:
+				last_month_days = rrule(DAILY, dtstart=datetime.date(year, month-1, 26), \
+					until=datetime.date(year, month, 1) - datetime.timedelta(days=1))
+
 			this_month_days = rrule(DAILY, dtstart=datetime.date(year, month, 1), \
 				until=datetime.date(year, month, 25))
 	
@@ -452,7 +480,7 @@ def schedule_list():
 @login_required
 def schedule_add():
 	#users = User.query.filter(User.team_id==2, User.active==1).order_by(User.id).all()
-	users = User.query.filter(User.active==1).order_by(User.id).all()
+	users = User.query.filter(User.active==1, User.id!=1).order_by(User.id).all()
 	return render_template('schedule_add.html', users=users)
 
 @app.route('/schedule/edit/<int:year>/<int:month>/', methods=['GET', 'POST'])
@@ -460,8 +488,13 @@ def schedule_add():
 def schedule_edit(year, month):
 	schedules = Schedule.query.filter(Schedule.year==year, Schedule.month==month).all()
 	
-	last_month_days = rrule(DAILY, dtstart=datetime.date(year, month-1, 26), \
+	if month == 1:
+		last_month_days = rrule(DAILY, dtstart=datetime.date(year-1, 12, 26), \
 			until=datetime.date(year, month, 1) - datetime.timedelta(days=1))
+	else:
+		last_month_days = rrule(DAILY, dtstart=datetime.date(year, month-1, 26), \
+			until=datetime.date(year, month, 1) - datetime.timedelta(days=1))
+
 	this_month_days = rrule(DAILY, dtstart=datetime.date(year, month, 1), \
 			until=datetime.date(year, month, 25))
 	

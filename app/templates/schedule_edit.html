@@ -3,85 +3,95 @@
 {% from "macros.html" import render_field %}
 
 <div class="pure-u-1">
-      <table class="pure-table pure-table-horizontal" style="width:160%">
-      <thead>
+      <table class="pure-table pure-table-horizontal" style="width:190%">
+        <thead>
             <tr align="center">
-                  <th colspan= {{ 1 + count }}>
-                        <h2>{{ year }}年 {{ month }}月 运维监控值班表</h2>
-                  </th>
+                <th colspan= {{ 1 + count + 1 }}>{{ year }}年{{ month }}月 监控值班表</th>
             </tr>
+        </thead>
+
             <tr align="center" bgcolor="#FFFFFF">
-                  <th></th>
-                  <th colspan={{ count - 25 }} style="border:1px solid #CCCCCC;">{{ month - 1 }}月</th>
-                  <th colspan=25 style="border:1px solid #CCCCCC;">{{ month }}月</th>
+                <th>监控班</th>
+                <th colspan={{ count - 25 }} style="border:1px solid #CCCCCC;">
+                {%- if month == 1 -%}12月
+                {%- else -%}{{ month - 1 }}月
+                {%- endif -%}
+                </th>
+                <th colspan=25 style="border:1px solid #CCCCCC;">{{ month }}月</th>
+                <th>监控班</th>
             </tr>
-      </thead>
-      <tbody>
+
             <tr>
             <th></th>
-            {% for i in last_month %}
-                  {% if i == 1 %}<th style="color:red;">{{ loop.index + 25 }}</th>
-                  {% else %}<th>{{ loop.index + 25 }}</th>
-                  {% endif %}
-            {% endfor %}
-            {% for i in this_month %}
-                  {% if i == 1 %}<th style="color:red;">{{ loop.index }}</th>
-                  {% else %}<th>{{ loop.index }}</th>
-                  {% endif %}
-            {% endfor %}
+            {%- for i in last_month -%}
+                {%- if i == 1 -%}<th style="color:red;">{{ loop.index + 25 }}</th>
+                {%- else -%}<th>{{ loop.index + 25 }}</th>
+                {%- endif -%}
+            {%- endfor -%}
+            {%- for i in this_month -%}
+                {%- if i == 1 -%}<th style="color:red;">{{ loop.index }}</th>
+                {%- else -%}<th>{{ loop.index }}</th>
+                {%- endif -%}
+            {%- endfor -%}
+            <th></th>
             </tr>
-            {% for staff in staffs %}
-            <tr id="tr_{{ loop.index }}">
-            {% if staff.type == 2 %}<td>{{ staff.name }}(替)</td>
-            {% else %}<td>{{ staff.name }}</td>
-            {% endif %}
-            
-            {% for day in staff.list.split(',') %}
-            <th><select id="select_{{ loop.index }}">
-                  {% if day == '0' %}
-                  <option value="0" selected="selected"></option><option value="1">早</option><option value="2">晚</option>
-                        {% if staff.type != 2 %}
-                        <option value="3">换</option><option value="4">休</option>
-                        <option value="5">全</option>
-                        {% endif %}
-                  {% endif %}
 
-                  {% if day == '1' %}
-                  <option value="0"></option><option value="1" selected="selected">早</option><option value="2">晚</option>
-                        {% if staff.type != 2 %}
-                        <option value="3">换</option><option value="4">休</option>
-                        <option value="5">全</option>
-                        {% endif %}
-                  {% endif %}
-
-                  {% if day == '2' %}
-                  <option value="0"></option><option value="1">早</option><option value="2" selected="selected">晚</option>
-                  <option value="3">换</option><option value="4">休</option>
-                  <option value="5">全</option>
-                  {% endif %}
-                  
-                  {% if day == '3' %}
-                  <option value="0"></option><option value="1">早</option><option value="2">晚</option>
-                  <option value="3" selected="selected">换</option><option value="4">休</option>
-                  <option value="5">全</option>
-                  {% endif %}
-
-                  {% if day == '4' %}
-                  <option value="0"></option><option value="1">早</option><option value="2">晚</option>
-                  <option value="3">换</option><option value="4" selected="selected">休</option>
-                  <option value="5">全</option>
-                  {% endif %}
-
-                  {% if day == '5' %}
-                  <option value="0"></option><option value="1">早</option><option value="2">晚</option>
-                  <option value="3">换</option><option value="4">休</option>
-                  <option value="5" selected="selected">全</option>
-                  {% endif %}
-            </select></th>
-            {% endfor %}
+            {%- for staff in staffs -%}
+            {%- if staff.type != 3 -%}
+            <tr id="tr_p_{{ loop.index }}">
+                <td>{{ staff.name }}</td>
+                {%- for day in staff.list.split(',') -%}
+                <td id="td_p_{{ loop.index }}">{{ day }}</td>
+                {%- endfor -%}
+                <td>{{ staff.name }}</td>
             </tr>
-            {% endfor %}
-      </tbody>
+            {%- endif -%}
+            {%- endfor -%}
+
+        <thead>
+            <tr align="center">
+                  <th colspan= {{ 1 + count + 1 }}>{{ year }}年{{ month }}月 加班调休表</th>
+            </tr>
+        </thead>
+
+            <tr align="center" bgcolor="#FFFFFF">
+                <th>正常班</th>
+                <th colspan={{ count - 25 }} style="border:1px solid #CCCCCC;">
+                {%- if month == 1 -%}12月
+                {%- else -%}{{ month - 1 }}月
+                {%- endif -%}
+                </th>
+                <th colspan=25 style="border:1px solid #CCCCCC;">{{ month }}月</th>
+                <th>正常班</th>
+            </tr>
+
+            <tr>
+            <th></th>
+            {%- for i in last_month -%}
+                {%- if i == 1 -%}<th style="color:red;">{{ loop.index + 25 }}</th>
+                {%- else -%}<th>{{ loop.index + 25 }}</th>
+                {%- endif -%}
+            {%- endfor -%}
+            {%- for i in this_month -%}
+                {%- if i == 1 -%}<th style="color:red;">{{ loop.index }}</th>
+                {%- else -%}<th>{{ loop.index }}</th>
+                {%- endif -%}
+            {%- endfor -%}
+            <th></th>
+            </tr>
+
+            {%- for staff in staffs -%}
+            {%- if staff.type == 3 -%}
+            <tr id="tr_n_{{ loop.index }}">
+                <td>{{ staff.name }}</td>                      
+                {%- for day in staff.list.split(',') -%}
+                <td id="td_n_{{ loop.index }}">{{ day }}</td>
+                {%- endfor -%}
+                <td>{{ staff.name }}</td>
+            </tr>
+            {%- endif -%}
+            {%- endfor -%}
+
       </table>
       <p>
 <a class="pure-button pure-button-primary" id="button_submit">提交</a>
@@ -89,45 +99,74 @@
 </div>
 
 <script type="text/javascript">
-$(function(){ 
-      
+$(function(){
+var select_p = '<select><option value="0"></option><option value="1">早</option><option value="2">晚</option><option value="3">全</option><option value="25">休</option></select>';
+
+var select_n = '<select><option value="0"></option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="25">休</option></select>';
+
+$('td[id^=td_p]').each(function(idx){
+    var flag = $(this).text();
+    $td = $(this).text('').html(select_p);
+    $td.find('option').each(function(){
+        if ($(this).val() == flag){
+            $(this).attr('selected', 'selected');
+        }
+    });
+});
+
+$('td[id^=td_n]').each(function(idx){
+    var flag = $(this).text();
+    $td = $(this).text('').html(select_n);
+    $td.find('option').each(function(){
+        if ($(this).val() == flag){
+            $(this).attr('selected', 'selected');
+        }
+    });
+});
+
 $('#button_submit').click(function(){
-      var staff = [];
+    var staff = [];
             
-      $('tr[id^=tr_]').each(function(idx){
-            var list = '';
+    $('tr[id^=tr]').each(function(idx){
+        var list = '';
+        var type = $(this).attr('id').split('_')[1];
+        var id = $(this).attr('id').split('_')[2];
 
-            $(this).find('select').each(function(idx){
-                  if (idx != {{ count -1 }}) {
-                        list = list + $(this).val() + ',';
-                  } else {
-                        list = list + $(this).val();
-                  }
-            });
+        $(this).find('select').each(function(idx){
+            if (idx != {{ count -1 }}) {
+                list = list + $(this).val() + ',';
+            } else {
+                list = list + $(this).val();
+            }
+        });
 
-            staff[idx] = {'id': idx + 1, 'list': list};
-      });
+        if (type == 'p') {
+            staff[idx] = {'id': id, 'type': 1,  'list': list};
+        } else {
+            staff[idx] = {'id': id, 'type': 2,  'list': list};
+        }
+    });
 
-      var post_data = {
-            'year': {{ year }}, 
-            'month': {{ month }}, 
-            'staff': staff, 
-      };
+    var post_data = {
+        'year': {{ year }}, 
+        'month': {{ month }},
+        'staff': staff, 
+    };
 
-      console.log(post_data);
+    //console.log(post_data);
 
-      $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            contentType: 'application/json;charset=utf-8',
-            url: $SCRIPT_ROOT + "{{ url_for('schedule_edit_commit') }}",
-            data: JSON.stringify(post_data),
-            success: function(data) {
-                  if (data.json) {
-                        window.location.href = "{{ url_for('schedule_list') }}"
-                  };    
-            },
-      });
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',
+        url: $SCRIPT_ROOT + "{{ url_for('schedule_edit_commit') }}",
+        data: JSON.stringify(post_data),
+        success: function(data) {
+            if (data.json) {
+                window.location.href = "{{ url_for('schedule_list') }}";
+            };    
+        },
+    });
 });
       
 });
