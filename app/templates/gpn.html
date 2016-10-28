@@ -1,0 +1,128 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<h1>{{ qos }}</h1>
+<div class="pure-u-1-2">
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr align="center">
+            <th style="display:none;">UUID</th>
+            <th>链路名称</th>
+            <th>当前链路带宽(Mb)</th>
+            <th>操作结果</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td id="gpn_uuid" style="display:none;"></td>
+            <td>GPN</td>
+            <td id="gpn_qos" align="center"></td>
+            <td id="gpn_message"></td>
+            <td>
+                <input name="gpn" type="radio" id="gpn_off" value="off"> 关闭
+                <input name="gpn" type="radio" id="gpn_on" value="on"> 开启
+            </td>
+        </tr>
+        <tr style="display:none;">
+            <td id="bj_uuid" style="display:none;"></td>
+            <td>北京</td>
+            <td id="bj_qos" align="center"></td>
+            <td id="bj_message"></td>
+            <td>
+                <input name="bj" type="radio" id="bj_off" value="off"> 关闭
+                <input name="bj" type="radio" id="bj_on" value="on"> 开启
+            </td>
+        </tr>
+        <tr style="display:none;">
+            <td id="wx_uuid" style="display:none;"></td>
+            <td>无锡</td>
+            <td id="wx_qos" align="center"></td>
+            <td id="wx_message"></td>
+            <td>
+                <input name="wx" type="radio" id="wx_off" value="off"> 关闭
+                <input name="wx" type="radio" id="wx_on" value="on"> 开启
+            </td>
+        </tr>
+        <tr>
+            <td id="la_uuid" style="display:none;"></td>
+            <td>洛杉矶云主机</td>
+            <td id="la_qos" align="center"></td>
+            <td id="la_message"></td>
+            <td>
+                <input name="la" type="radio" id="la_off" value="off"> 关闭
+                <input name="la" type="radio" id="la_on" value="on"> 开启
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="pure-u-1-2">
+</div>
+
+<script type="text/javascript">
+$(function() {
+    // gpn状态
+    $.ajax({
+        type: 'GET',
+        url: '/json/gpn/bandwidth',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',
+        success: function(data){
+            $('#gpn_uuid').empty().html(data.id);
+            if (data.qos==5) {
+                $('#gpn_qos').empty().html('<button class="pure-button pure-button-disabled">' + data.qos + '</button>');
+                $('#gpn_off').attr('checked', 'checked');
+            } else {
+                $('#gpn_qos').empty().html('<button class="pure-button pure-button-primary pure-button-disabled">' + data.qos + '</button>');
+                $('#gpn_on').attr('checked', 'checked');
+            }
+        },
+    });
+
+    // public状态
+    $.ajax({
+        type: 'GET',
+        url: '/json/public/bandwidth',
+        dataType: 'json',
+        contentType: 'application/json;charset=utf-8',
+        success: function(data){
+            $.each(data, function(i, v){
+                $('#'+v.name+'_uuid').empty().html(v.id);
+                if (v.qos==5) {
+                    $('#'+v.name+'_qos').empty().html('<button class="pure-button pure-button-disabled">' + v.qos + '</button>');
+                    $('#'+v.name+'_off').attr('checked', 'checked');
+                } else {
+                    $('#'+v.name+'_qos').empty().html('<button class="pure-button pure-button-primary pure-button-disabled">' + v.qos + '</button>');
+                    $('#'+v.name+'_on').attr('checked', 'checked');
+                }
+            });
+        },
+    });
+
+    // input radio change 
+    $('input').on('change', function(){
+       var name = $(this).attr('name');
+       var action = $(this).val();
+       var url = '';
+       var postData = {'name': name, 'action': action};
+
+        $.ajax({
+            type: 'POST',
+            url: '/json/bandwidth',
+            data: JSON.stringify(postData),
+            dataType: 'json',
+            contentType: 'application/json;charset=utf-8',
+            success: function(data){
+                //console.log(data);
+		        setTimeout(function(){ window.location.reload(); }, 8000);
+                $('#'+ data.name +'_message').empty().html(data.message);
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

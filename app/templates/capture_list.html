@@ -3,7 +3,7 @@
 {% from 'macros.html' import render_pagination %}
 
 <div class="pure-u-1">
-	<table class="pure-table pure-table-horizontal">
+	<table class="pure-table pure-table-horizontal" width="105%">
 		<thead>
 			<tr align="center">
 				<th>ID</th>
@@ -30,22 +30,28 @@
 				<td align="center">
 				{% if capture.location_id == 1 %}无锡新区
 				{% elif capture.location_id == 2 %}无锡国脉
-				{% elif capture.location_id == 3 %}北京
-				{% elif capture.location_id == 4 %}北京备份
-				{% elif capture.location_id == 5 %}上海
-				{% elif capture.location_id == 6 %}上海备份
-				{% elif capture.location_id == 7 %}广州
+				{% elif capture.location_id == 3 %}北京中关村
+				{% elif capture.location_id == 4 %}北京铜牛
+				{% elif capture.location_id == 5 %}上海科技网
+				{% elif capture.location_id == 6 %}上海办公室
+				{% elif capture.location_id == 7 %}广州七星岗
 				{% elif capture.location_id == 8 %}长沙
 				{% elif capture.location_id == 9 %}安徽
 				{% elif capture.location_id == 10 %}山西
+				{% elif capture.location_id == 11 %}浙江
+				{% elif capture.location_id == 12 %}辽宁
+				{% elif capture.location_id == 13 %}四川
+				{% elif capture.location_id == 14 %}CIBN
+                {% elif capture.location_id == 15 %}上海教育网
 				{% endif %}</td>
 				<td align="center">
                   {% if capture.model_id == 1 %}dell r410
-                  {% elif capture.model_id == 1 %}dell r710
-                  {% elif capture.model_id == 1 %}老双子星 
-                  {% elif capture.model_id == 1 %}超微双子星 
-                  {% elif capture.model_id == 1 %}dell r420 
-                  {% elif capture.model_id == 1 %}dell r720 
+                  {% elif capture.model_id == 2 %}dell r710
+                  {% elif capture.model_id == 3 %}老双子星 
+                  {% elif capture.model_id == 4 %}超微双子星 
+                  {% elif capture.model_id == 5 %}dell r420 
+                  {% elif capture.model_id == 6 %}dell r720 
+                  {% elif capture.model_id == 7 %}超微四子星
                   {% endif %}
                 </td>
 				<td><a href="{{ url_for('capture_detail', id=capture.id) }}">{{ capture.hostname }}</a></td>
@@ -54,7 +60,7 @@
 				<td>{{ capture.nic3 }}</td>
 				<td align="center">{{ capture.category }}</td>
 				<td>{{ capture.password }}</td>
-				<td>{{ capture.channel }}</td>
+				<td>{{ capture.channel|split|safe }}</td>
 				{% if current_user.is_authenticated() and current_user.team_id in [1, 3] %} 
 				<td align="center"><a href="{{ url_for('capture_edit', id=capture.id) }}"><i class="fa fa-pencil-square-o"></i></a></td>
 				{% else %}

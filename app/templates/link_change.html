@@ -1,0 +1,153 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="pure-u-1-1">
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr align="center">
+            <th>服务器</th><th>网卡流入</th><th>网卡流出</th><th>TCP连接数</th><th>当前链路</th><th colspan="2">切换链路</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr id="us-1-219">
+            <td>us-1-219</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td rowspan="2">
+                <input type="radio" name="proxy_dc" value="wx-1-ct"> 1期电信 
+                <input type="radio" name="proxy_dc" value="wx-1-cu"> 1期联通 
+                <input type="radio" name="proxy_dc" value="wx-2-ct"> 2期电信 
+                <input type="radio" name="proxy_dc" value="wx-2-cu"> 2期联通 
+                <input type="radio" name="proxy_dc" value="la"> la 
+                <!--input type="radio" name="proxy_dc" value="gpn"> gpn-->              
+            </td>
+            <td rowspan="2"><button id="button_dc" class="pure-button">提交</button></td>
+		</tr>
+
+        <tr id="us-1-220">
+            <td>us-1-220</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr id="la-1-219">
+            <td>la-1-219</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td rowspan="2">
+                <input type="radio" name="proxy_la" value="wx-1-ct"> 1期电信 
+                <input type="radio" name="proxy_la" value="wx-1-cu"> 1期联通 
+                <input type="radio" name="proxy_la" value="wx-2-ct"> 2期电信 
+                <input type="radio" name="proxy_la" value="wx-2-cu"> 2期联通 
+                <input type="radio" name="proxy_la" value="dc"> dc
+                <input type="radio" name="proxy_la" value="gpn"> gpn               
+            </td>
+            <td rowspan="2"><button id="button_la" class="pure-button">提交</button></td>
+        </tr>
+
+        <tr id="la-1-220">
+            <td>la-1-220</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    function refresh() 
+    { 
+    $.ajax({
+        type: 'GET',
+        url: '/json/link',
+        dataType: 'json',
+        success: function(data){
+            //console.log(data);
+            $.each(data, function(i, item){
+                $('#' + item[0] + ' td:eq(1)').empty().html(item[1]);
+                $('#' + item[0] + ' td:eq(2)').empty().html(item[2]);
+                $('#' + item[0] + ' td:eq(3)').empty().html(item[3]);
+                $('#' + item[0] + ' td:eq(4)').empty().html(item[4]);
+            });
+
+            var dc_219_link = $('#us-1-219 td:eq(4)').text();
+            var dc_220_link = $('#us-1-220 td:eq(4)').text();
+            var la_219_link = $('#la-1-219 td:eq(4)').text();
+            var la_220_link = $('#la-1-220 td:eq(4)').text();
+
+            if ( dc_219_link == dc_220_link ) {
+                $.each($('input[name=proxy_dc]'), function(){
+                    if ( $(this).val() == dc_219_link ) {
+                        $(this).attr('checked', true);
+                    }
+                });
+            }
+
+            if ( la_219_link == la_220_link ) {
+                $.each($('input[name=proxy_la]'), function(){
+                    if ( $(this).val() == la_219_link ) {
+                        $(this).attr('checked', true);
+                    } 
+                });
+            }
+        }
+    });
+    }
+
+    // 60秒定时刷新
+    setInterval(refresh, 1000*60);
+
+    // 选择链路
+    $('input[name=proxy_dc]').click(function(){
+        if ( $(this).val() == 'la' ) {
+            $('input[name=proxy_la]:checked').val() != 'dc' && $('input[value=dc]').attr('disabled', 'disabled');
+        } else {
+            $('input[name=proxy_la]:checked').val() != 'dc' && $('input[value=dc]').removeAttr('disabled');
+        }
+    });
+
+    $('input[name=proxy_la]').click(function(){
+        if ( $(this).val() == 'dc' ) {
+            $('input[name=proxy_dc]:checked').val() != 'la' && $('input[value=la]').attr('disabled', 'disabled');
+        } else {
+            $('input[name=proxy_dc]:checked').val() != 'la' && $('input[value=la]').removeAttr('disabled');
+        }
+    });
+
+    $('button').click(function(){
+        if ( $(this).attr('id') == 'button_dc' ) {
+            var name = 'proxy_dc';
+        } else {
+            var name = 'proxy_la';
+        }
+        
+        var idc  = $('input[name=' + name + ']:checked').attr('name');
+        var link = $('input[name=' + name + ']:checked').val();
+        var current_button = $(this);
+        current_button.attr('disabled', 'disabled');
+
+        $.ajax({
+            type: 'POST',
+            url: '/json/link?' + 'idc=' + idc + '&link=' + link,
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+                refresh();
+                current_button.removeAttr('disabled');
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

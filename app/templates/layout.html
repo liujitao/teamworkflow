@@ -3,13 +3,13 @@
 <head>
     <title>Team Work Flow</title>
 
-    <script charset="utf-8" src="{{ url_for('static', filename='jquery-1.11.0.min.js') }}"></script>
-    <script src="http://yui.yahooapis.com/3.14.1/build/yui/yui-min.js"></script>
+    <script src="{{ url_for('static', filename='jquery-1.11.0.min.js') }}"></script>
+    <script src="//cdn.bootcss.com/yui/3.18.1/yui/yui-min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='kindeditor/plugins/code/prettify.css') }}"/>
-    <script charset="utf-8" src="{{ url_for('static', filename='kindeditor/kindeditor-min.js') }}"></script>
-    <script charset="utf-8" src="{{ url_for('static', filename='kindeditor/lang/zh_CN.js') }}"></script>
-    <script charset="utf-8" src="{{ url_for('static', filename='kindeditor/plugins/code/prettify.js
+    <script src="{{ url_for('static', filename='kindeditor/kindeditor-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='kindeditor/lang/zh_CN.js') }}"></script>
+    <script src="{{ url_for('static', filename='kindeditor/plugins/code/prettify.js
 ') }}"></script>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='pure-min.css') }}"/>
@@ -39,7 +39,9 @@
         <li><a href="{{ url_for('task_list') }}">运维工单</a></li>
         <li><a href="{{ url_for('user_list') }}">团队成员</a></li>
         <li><a href="{{ url_for('capture_list') }}">采集&直播流</a></li>
-
+        <li><a href="/gpn">gpn切换</a></li>
+        <li><a href="/link">链路切换</a></li>
+        <li><a href="/link_status">链路状态</a></li>
         <li><a href="{{ url_for('wiki_list') }}">知识库</a></li>
  
         <li><a><i class="fa fa-user"></i> {{ current_user.name }}</a>

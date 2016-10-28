@@ -4,40 +4,38 @@
 
 <div class="pure-u-1-2">
 <form class="pure-form">
-<table class="pure-table">
-      <tr>
-            <th colspan=4>年份 
-            <select id="select_year">
-                  <option>2014</option>
-                  <option>2015</option>
-                  <option>2016</option>
-                  <option>2017</option>
-                  <option>2018</option>
-            </select>
+    <table class="pure-table">
+        <tr>
+            <th colspan=3>
+            年份 
+                <select id="select_year">
+                {%- for year in years -%}
+                    <option>{{ year }}</option>
+                {%- endfor -%}
+                </select>
             月份 
-            <select id="select_month">
+                <select id="select_month">
                   <option>1</option><option>2</option><option>3</option><option>4</option>
                   <option>5</option><option>6</option><option>7</option><option>8</option>
                   <option>9</option><option>10</option><option>11</option><option>12</option>             
-            </select>
+                </select>
             </th>
-      </tr>
-      <tr style="background-color:#999999">
-            <th id="p_staff_desc" width=50% colspan=2>轮班人员 (最少4名)</th>
-            <th id="t_staff_desc" width=25%>替班人员 (最少1名)</th>
-            <th id="n_staff_desc" width=25%>正常班人员</th>
-      </tr>
+        </tr>
+        
+        <tr style="background-color:#999999">
+            <th id="p_staff_desc" width=50% colspan=2>轮班人员 (最少6名)</th>
+            <th id="t_staff_desc" width=25%>白班人员 (最少1名)</th>
+        </tr>
 
-      {%- for user in users -%}
-      <tr>
+        {%- for user in users -%}
+        <tr>
             <td><input type="checkbox" id="checkbox_p_staff_{{ user.id }}" value="{{ user.name }}">{{ user.name }}</td>
             <td><select id="select_date_{{ user.id }}"><option>本月早班开始时间</option></select></td>
-            <td><input type="checkbox" id="checkbox_t_staff_{{ user.id }}" value="{{ user.name }}"> {{ user.name }}</td>
-            <td><input type="checkbox" id="checkbox_n_staff_{{ user.id }}" value="{{ user.name }}"> {{ user.name }}</td>
-      </tr>
-      {%- endfor -%}
-
+            <td><input type="checkbox" id="checkbox_t_staff_{{ user.id }}" value="{{ user.name }}">{{ user.name }}</td>
+        </tr>
+        {%- endfor -%}
 </table>
+
 <p>
 <a class="pure-button pure-button-primary" id="button_submit">提交</a>
 <a class="pure-button" href="{{ url_for('schedule_list') }}">返回</a>
@@ -48,35 +46,36 @@
 $(function(){
 
 $('input[id^=checkbox_p_staff]').change(function(){
-      var year = $('#select_year').val();
-      var month = $('#select_month').val();
-      var id = $(this).attr('id').split('_')[3];
+    var year = $('#select_year').val();
+    var month = $('#select_month').val();
+    var id = $(this).attr('id').split('_')[3];
 
-      if ($('#select_date_' + id).children().length == 1) {
-            $.ajax({
-                  type: 'GET',
-                  url: $SCRIPT_ROOT + '{{ url_for('get_first_4days') }}',
-                  contentType: 'application/json; charset=utf-8',
-                  dataType: 'json',
-                  data: { 'year': year, 'month': month },
-                  success: function(data) {
-                        /* console.log(data.json[0].id, data.json[0].name, data.json[1].id, data.json[1].name) */
-                        var str = '<option>本月值班开始时间</option>';
-                        for (var i = 0; i < data.json.length; i++) {
-                              var c = data.json[i];
-                              str += '<option>' + c.name + '</option>';
-                        }
-                        $('#select_date_' + id).html(str);
-                  }
-            });
-            $('#checkbox_p_staff_' + id).attr('checked', 'checked');
-            $('#checkbox_t_staff_' + id).attr('disabled', 'disabled');
-            $('#checkbox_n_staff_' + id).attr('disabled', 'disabled');
+    if ($('#select_date_' + id).children().length == 1) {
+        $.ajax({
+            type: 'GET',
+            url: $SCRIPT_ROOT + '{{ url_for('get_first_6days') }}',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: { 'year': year, 'month': month },
+            success: function(data) {
+                /*console.log(data.json[0].id, data.json[0].name, data.json[1].id, data.json[1].name)*/
+
+                var str = '<option>本月值班开始时间</option>';
+                for (var i = 0; i < data.json.length; i++) {
+                    var c = data.json[i];
+                    str += '<option>' + c.name + '</option>';
+                }
+                $('#select_date_' + id).html(str);
+            }
+          });
+            
+          $('#checkbox_p_staff_' + id).attr('checked', 'checked');
+          $('#checkbox_t_staff_' + id).attr('disabled', 'disabled');
+      
       } else {
-            $('#select_date_' + id).empty().append('<option>本月值班开始时间</option>');
-            $('#checkbox_p_staff_' + id).removeAttr('checked');
-            $('#checkbox_t_staff_' + id).removeAttr('disabled');
-            $('#checkbox_n_staff_' + id).removeAttr('disabled');
+          $('#select_date_' + id).empty().append('<option>本月值班开始时间</option>');
+          $('#checkbox_p_staff_' + id).removeAttr('checked');
+          $('#checkbox_t_staff_' + id).removeAttr('disabled');
       } 
 });
 
@@ -89,17 +88,8 @@ $('input[id^=checkbox_t_staff]').change(function(){
       }
 });
 
-$('input[id^=checkbox_n_staff]').change(function(){
-      var id = $(this).attr('id').split('_')[3];
-      if ($(this).attr('checked')) {
-            $('#checkbox_n_staff_' + id).removeAttr('checked');
-      } else {
-            $('#checkbox_n_staff_' + id).attr('checked', 'checked'); 
-      }
-});
-
 $('#button_submit').click(function(){
-      if ($('input[checked][id^=checkbox_p]').length < 4) {
+      if ($('input[checked][id^=checkbox_p]').length < 6) {
             $('#p_staff_desc').attr('style', 'color:red')
       } else if ($('input[checked][id^=checkbox_t]').length <1) {
             $('#t_staff_desc').attr('style', 'color:red')
@@ -113,9 +103,7 @@ $('#button_submit').click(function(){
                         var id = $(this).attr('id').split('_')[3];
                         staff[idx] = idx + 1 + ',' + $(this).val() + ',' + $('#select_date_' + id).val() + ',' + 1;
                   } else if ($(this).attr('id').substr(0, 10) == 'checkbox_t') {
-                        staff[idx] = idx + 1 + ',' + $(this).val() + ',,' + 2;
-                  } else if ($(this).attr('id').substr(0, 10) == 'checkbox_n') {
-                        staff[idx] = idx + 1 + ',' + $(this).val() + ',,' + 3;
+                        staff[idx] = idx + 1 + ',' + $(this).val() + ',' + '' + ',' + 2;
                   }
             });
 

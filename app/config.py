@@ -10,7 +10,7 @@ UPLOAD_ALLOWED_EXTENSIONS = set(['conf', 'ini', 'txt', 'pdf', 'png', 'jpg', 'jpe
 
 #SQLALCHEMY_DATABASE_URI = 'mysql://team:team@localhost/team'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(APP_ROOT, 'team.db')
-SQLALCHEMY_ECHO = 'True'
+SQLALCHEMY_ECHO = False
 
 CSRF_ENABLED = True
 SECRET_KEY = 'tvm'

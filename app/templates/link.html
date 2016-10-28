@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="pure-u-1-1">
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr align="center">
+            <th>下载速度(Byte)</th><th>丢包率(%)</th><th>ping(ms)</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+		<td><img src="http://69.19.34.27/rrd/download.png" width="600"></td>
+		<td><img src="http://69.19.34.27/rrd/loss.png" width="600"></td>
+		<td><img src="http://69.19.34.27/rrd/ping.png" width="600"></td>
+		</tr>
+		<tr>
+
+        <tr>
+                <td><img src="http://69.19.34.28/rrd/download.png" width="600"></td>
+                        <td><img src="http://69.19.34.28/rrd/loss.png" width="600"></td>
+                                <td><img src="http://69.19.34.28/rrd/ping.png" width="600"></td>
+
+		</tr>
+		<tr>
+
+        <tr>
+        <td><img src="http://173.5.34.12/rrd/download.png" width="600"></td>
+                <td><img src="http://173.5.34.12/rrd/loss.png" width="600"></td>
+                        <td><img src="http://173.5.34.12/rrd/ping.png" width="600"></td>
+
+		</tr>
+		<tr>
+
+        <tr>
+        <td><img src="http://173.5.34.13/rrd/download.png" width="600"></td>
+                <td><img src="http://173.5.34.13/rrd/loss.png" width="600"></td>
+                        <td><img src="http://173.5.34.13/rrd/ping.png" width="600"></td>
+
+		</tr>
+		<tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="pure-u-1-1">
+</div>
+
+<script type="text/javascript">
+$(function() {
+});
+
+function refresh(){
+    window.location.reload();
+}
+
+setTimeout('refresh()', 1000*60*5);
+</script>
+
+{% endblock %}

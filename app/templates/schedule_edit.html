@@ -48,50 +48,6 @@
             {%- endif -%}
             {%- endfor -%}
 
-        <thead>
-            <tr align="center">
-                  <th colspan= {{ 1 + count + 1 }}>{{ year }}年{{ month }}月 加班调休表</th>
-            </tr>
-        </thead>
-
-            <tr align="center" bgcolor="#FFFFFF">
-                <th>正常班</th>
-                <th colspan={{ count - 25 }} style="border:1px solid #CCCCCC;">
-                {%- if month == 1 -%}12月
-                {%- else -%}{{ month - 1 }}月
-                {%- endif -%}
-                </th>
-                <th colspan=25 style="border:1px solid #CCCCCC;">{{ month }}月</th>
-                <th>正常班</th>
-            </tr>
-
-            <tr>
-            <th></th>
-            {%- for i in last_month -%}
-                {%- if i == 1 -%}<th style="color:red;">{{ loop.index + 25 }}</th>
-                {%- else -%}<th>{{ loop.index + 25 }}</th>
-                {%- endif -%}
-            {%- endfor -%}
-            {%- for i in this_month -%}
-                {%- if i == 1 -%}<th style="color:red;">{{ loop.index }}</th>
-                {%- else -%}<th>{{ loop.index }}</th>
-                {%- endif -%}
-            {%- endfor -%}
-            <th></th>
-            </tr>
-
-            {%- for staff in staffs -%}
-            {%- if staff.type == 3 -%}
-            <tr id="tr_n_{{ staff.id }}">
-                <td>{{ staff.name }}</td>                      
-                {%- for day in staff.list.split(',') -%}
-                <td id="td_n_{{ staff.id }}">{{ day }}</td>
-                {%- endfor -%}
-                <td>{{ staff.name }}</td>
-            </tr>
-            {%- endif -%}
-            {%- endfor -%}
-
       </table>
       <p>
 <a class="pure-button pure-button-primary" id="button_submit">提交</a>
@@ -101,8 +57,6 @@
 <script type="text/javascript">
 $(function(){
 var select_p = '<select><option value="0"></option><option value="1">早</option><option value="2">晚</option><option value="3">全</option><option value="4">换</option><option value="25">休</option></select>';
-
-var select_n = '<select><option value="0"></option><option value="1">1h</option><option value="2">2h</option><option value="3">3h</option><option value="4">4h</option><option value="5">5h</option><option value="6">6h</option><option value="7">7h</option><option value="8">8h</option><option value="9">9h</option><option value="10">10h</option><option value="11">11h</option><option value="12">12h</option><option value="13">13h</option><option value="14">14h</option><option value="15">15h</option><option value="16">16h</option><option value="25">休</option></select>';
 
 $('td[id^=td_p]').each(function(idx){
     var flag = $(this).text();

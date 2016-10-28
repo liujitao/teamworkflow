@@ -28,9 +28,11 @@
 				<td>{{ user.mobile }}</td>
 				<td>
 				{% if user.team_id == 1 %}管理
-				{% elif user.team_id == 2 %}机房运维
+				{% elif user.team_id == 2 %}运维监控
 				{% elif user.team_id == 3 %}信号采集
 				{% elif user.team_id == 4 %}网络存储
+				{% elif user.team_id == 5 %}机房运维
+				{% elif user.team_id == 6 %}直播流运营
 				{% endif %}
 				</td>
 				{% if current_user.is_authenticated() and ( user.email == current_user.email or current_user.team_id == 1) %} 

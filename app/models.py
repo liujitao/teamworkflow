@@ -18,7 +18,7 @@ class User(db.Model):
 
 	def __init__(self, name, email, qq, mobile, password, team_id, active):
 		self.name = name
-		self.email = email.lower()	
+		self.email = email	
 		self.qq = qq
 		self.mobile = mobile
 		self.set_password(password)
@@ -157,5 +157,14 @@ class YumSite(db.Model):
 	http = db.Column(db.String(40))
 	rsync = db.Column(db.String(40), nullable=False)
 	speed = db.Column(db.String(40), default='0')
+	updated_user = db.Column(db.String(40), default='admin')
+	updated_time = db.Column(db.DateTime, default=datetime.datetime.now())
+
+class GPN(db.Model):
+	__tablename__ = 'gpn'
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	bandwidth = db.Column(db.String(40))
+	status = db.Column(db.String(40))
+	message = db.Column(db.String(100))
 	updated_user = db.Column(db.String(40), default='admin')
 	updated_time = db.Column(db.DateTime, default=datetime.datetime.now())

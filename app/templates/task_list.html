@@ -11,7 +11,6 @@
 				<th>任务类型</th>
 				<th>申请团队</th>
 				<th>申请时间</th>
-				<th>资源过期时间</th>
 				<th>计划完成时间</th>
 				<th>完成时间</th>
 				<th>派单人</th>
@@ -36,15 +35,6 @@
 				<td>{{ task.team }}</td>
 				<td>{{ task.created_time.strftime('%Y-%m-%d %H:%M') }}</td>
 				
-				{% if task.expired_time %}
-					{% if task.status == 4 and task.expire == 1 %}
-					<th style="color: red">{{ task.expired_time.strftime('%Y-%m-%d') }}</th>
-					{% else %}
-					<td>{{ task.expired_time.strftime('%Y-%m-%d') }}</td>
-					{% endif %}
-				{% else %}<td></td>
-				{% endif %}
-
 				<td>{{ task.planned_time.strftime('%Y-%m-%d') }}</td>
 
 				{% if task.executed_time %}<td>{{ task.executed_time.strftime('%Y-%m-%d %H:%M') }}</td>

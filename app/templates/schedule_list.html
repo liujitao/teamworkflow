@@ -4,23 +4,30 @@
 
 <div class="pure-u-1">
 {%- for schedule in lists -%}
-      <table class="pure-table pure-table-horizontal" style="width:110%">
+      <table class="pure-table pure-table-horizontal" style="width:115%">
             <thead>
             <tr>
-                  <th colspan= {{ 1 + schedule.count + 6 }} align="center">
-                        {{ schedule.year }}年{{ schedule.month }}月 监控值班表
-                  </th>
+                <th colspan= {{ 1 + schedule.count + 7 }} align="center">
+                {{ schedule.year }}年{{ schedule.month }}月 监控值班表
+                </th>
             </tr>
             </thead>
 
             <tr align="center" bgcolor="#FFFFFF">
-                  <th>{%- if current_user.is_authenticated() and current_user.team_id == 1 -%}<a href="{{ url_for('schedule_edit', year=schedule.year, month=schedule.month)}}">编辑</a>{%- endif -%}</th>
-                  <th colspan={{ schedule.count - 25 }} style="border:1px solid #CCCCCC;">
-                  {%- if schedule.month == 1 -%}12月
-                  {%- else -%}{{ schedule.month - 1 }}月
-                  {%- endif -%}
-                  </th>
-                  <th colspan=29 style="border:1px solid #CCCCCC;">{{ schedule.month }}月</th>
+                <th>
+                {%- if current_user.is_authenticated() and current_user.team_id == 1 -%}
+                <a href="{{ url_for('schedule_edit', year=schedule.year, month=schedule.month)}}">编辑</a>
+                    {%- if schedule.year == current_year and schedule.month > current_month -%}
+                    <a href="{{ url_for('schedule_delete', year=schedule.year, month=schedule.month)}}">删除</a>
+                    {%- endif -%}
+                {%- endif -%}
+                </th>
+                <th colspan={{ schedule.count - 25 }} style="border:1px solid #CCCCCC;">
+                {%- if schedule.month == 1 -%}12月
+                {%- else -%}{{ schedule.month - 1 }}月
+                {%- endif -%}
+                </th>
+                <th colspan=30 style="border:1px solid #CCCCCC;">{{ schedule.month }}月</th>
             </tr>
 
             <tr>
@@ -35,7 +42,7 @@
                   {%- else -%}<th>{{ loop.index }}</th>
                   {%- endif -%}
             {%- endfor -%}
-            <th>总</th><th>早</th><th>晚</th><th>休</th>
+            <th>总</th><th>早</th><th>晚</th><th>休</th><th>小时</th>
             </tr>
 
             {%- for staff in schedule.staffs -%}
@@ -59,57 +66,7 @@
                   <th>{{ staff.morning }}</th>
                   <th>{{ staff.evening }}</th>
                   <th>{{ staff.rest }}</th>
-            </tr>
-            {%- endif -%}
-            {%- endfor -%}
-
-            <thead>
-            <tr align="center">
-                  <th colspan= {{ 1 + schedule.count + 6 }}>
-                        {{ schedule.year }}年{{ schedule.month }}月 加班调休表
-                  </th>
-            </tr>
-            </thead>
-
-            <tr align="center" bgcolor="#FFFFFF">
-                  <th></th>
-                  <th colspan={{ schedule.count - 25 }} style="border:1px solid #CCCCCC;">
-                  {%- if schedule.month == 1 -%}12月
-                  {%- else -%}{{ schedule.month - 1 }}月
-                  {%- endif -%}
-                  </th>
-                  <th colspan=29 style="border:1px solid #CCCCCC;">{{ schedule.month }}月</th>
-            </tr>
-
-            <tr>
-            <th>正常班</th>
-            {%- for i in schedule.last_month -%}
-                  {%- if i == 1 -%}<th style="color:red;">{{ loop.index + 25 }}</th>
-                  {%- else -%}<th>{{ loop.index + 25 }}</th>
-                  {%- endif -%}
-            {%- endfor -%}
-            {%- for i in schedule.this_month -%}
-                  {%- if i == 1 -%}<th style="color:red;">{{ loop.index }}</th>
-                  {%- else -%}<th>{{ loop.index }}</th>
-                  {%- endif -%}
-            {%- endfor -%}
-            <th>加</th><th>休</th>
-            </tr>
-
-            {%- for staff in schedule.staffs -%}
-            {%- if staff.type == 3 -%}
-            <tr align="center">
-                  <td>{{ staff.name }}</td>
-            
-                  {%- for day in staff.list.split(',') -%}
-                        {%- if day == '0' -%}<td></td>
-                        {%- elif day == '25' -%}<td style="background-color:#FF9966">休</td>
-                        {%- else -%}<td>{{ day }}</td>
-                        {%- endif -%}
-                  {%- endfor -%}
-            
-                  <th>{{ staff.overtime }}</th>
-                  <th>{{ staff.rest }}</th>
+                  <th>{{ (staff.morning + staff.evening) * 8}}</th>
             </tr>
             {%- endif -%}
             {%- endfor -%}
